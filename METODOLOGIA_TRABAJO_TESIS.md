@@ -13,105 +13,54 @@
 
 La presente metodología articula de manera rigurosa la ingeniería de minas clásica, la metalurgia extractiva del cobre, la teoría de muestreo de Pierre Gy, la ciencia de datos y la inteligencia artificial supervisada. Su propósito central es cerrar la brecha de conciliación minera que afecta a la pequeña y mediana minería de Chile, reemplazando la incertidumbre del error empírico histórico entre la cancha de acopio y el poder de compra (**ENAMI** / **Planta San José**) por un sistema predictivo robusto, interpretable y con impacto económico cuantificable.
 
-### Diagrama de Flujo Metodológico Integral
+### Diagrama de Flujo Metodológico
 
 ```mermaid
 flowchart TD
-    classDef terminal fill:#1E293B,stroke:#0F172A,stroke-width:2.5px,color:#FFFFFF,font-size:14px,font-weight:bold;
-    classDef dataStore fill:#E0F2FE,stroke:#0284C7,stroke-width:2px,color:#0369A1,font-size:13px,font-weight:bold;
-    classDef process fill:#EDE9FE,stroke:#7C3AED,stroke-width:2px,color:#4C1D95,font-size:13px;
-    classDef model fill:#E0E7FF,stroke:#4338CA,stroke-width:2.5px,color:#1E1B4B,font-size:13px,font-weight:bold;
-    classDef decision fill:#FEF3C7,stroke:#D97706,stroke-width:2.5px,color:#92400E,font-size:13px,font-weight:bold;
-    classDef evaluation fill:#DCFCE7,stroke:#16A34A,stroke-width:2px,color:#14532D,font-size:13px;
-    classDef finance fill:#FFEDD5,stroke:#EA580C,stroke-width:2px,color:#7C2D12,font-size:13px;
-    classDef ui fill:#CCFBF1,stroke:#0D9488,stroke-width:2.5px,color:#115E59,font-size:13px,font-weight:bold;
-
-    START(["Inicio: Desafío de Conciliación y Pérdidas Económicas"]):::terminal
-
-    subgraph F1["FASE 1: PRE-MODELADO Y ETL DE DATOS"]
-        DB[("Base de Datos Cobrizo: 24 Registros Mensuales (2023-2024)")]:::dataStore
-        EDA["Análisis Exploratorio (EDA), Outliers (IQR) y Multicolinealidad (VIF)"]:::process
-        SPLIT{"Partición Estratégica: Train 80% / Test 20%"}:::decision
-        SCALER["Estandarización Z-Score (StandardScaler sin Data Leakage)"]:::process
+    subgraph S1["FASE 1: PRE-MODELADO"]
+        A["Base de Datos Mantos Cobrizo (2023-2024)"] --> B["EDA & Estadísticos Descriptivos"]
+        B --> C["Feature Analysis & Multicolinealidad (VIF)"]
+        C --> D["Preprocesamiento & StandardScaler (Sin Data Leakage)"]
     end
 
-    subgraph F23["FASES 2 Y 3: MODELADO PARAMÉTRICO Y REDES NEURONALES"]
-        BASE["Línea Base Cancha (Histórico): MSE Empírico ~26%"]:::process
-        MOD_LIN[["Modelos Lineales: OLS, Ridge (L2), Lasso (L1) y ElasticNet"]]:::model
-        MOD_PROF[["RNA Base del Profesor (Dr. Delgado): MLP (CuT, CuS)"]]:::model
-        MOD_PROP[["RNA Propia Optimizada: MLP + Regularización L2 + Adam + CV"]]:::model
+    subgraph S2["FASE 2: LÍNEA BASE Y MODELOS LINEALES"]
+        D --> E["Línea Base Cancha (MSE Histórico ~26%)"]
+        D --> F["Regresión OLS"]
+        D --> G["Regresiones Regularizadas: Ridge (L2), Lasso (L1) y ElasticNet"]
     end
 
-    subgraph F4["FASE 4: EVALUACIÓN, DIAGNÓSTICO Y EXPLICABILIDAD"]
-        BENCH["Benchmarking Multimétrico: MSE, RMSE, MAE, MAPE y R²"]:::evaluation
-        RESID["Diagnóstico de Residuos: Shapiro-Wilk, Breusch-Pagan, Durbin-Watson"]:::evaluation
-        TEST_SIG{"¿Mejora Estadística Significativa? (Wilcoxon p < 0.05)"}:::decision
-        XAI["Explicabilidad XAI del Modelo: Valores SHAP y Permutación"]:::evaluation
+    subgraph S3["FASE 3: MODELADO CON REDES NEURONALES (RNA)"]
+        D --> H["RNA Línea Base del Profesor (Dr. Delgado)"]
+        D --> I["RNA Propia Optimizada (MLP + L2 + Adam + K-Fold)"]
     end
 
-    subgraph F5["FASE 5: VALORIZACIÓN Y MODELO ECONÓMICO"]
-        ENAMI_TAR[/"Resoluciones Tarifarias Oficiales ENAMI (2023-2024)"/]:::dataStore
-        SIM_FIN["Simulación Financiera: Liquidación Cancha vs Canje vs RNA"]:::finance
-        SAVING[/"Cuantificación del Ahorro Neto y Pérdidas Evitadas (USD)"/]:::finance
+    subgraph S4["FASE 4: POST-MODELADO, EVALUACIÓN Y XAI"]
+        E & F & G & H & I --> J["Benchmarking de Modelos (MSE, RMSE, MAE, R²)"]
+        J --> K["Diagnóstico de Residuos (Shapiro-Wilk, Breusch-Pagan, Durbin-Watson)"]
+        J --> L["Prueba de Significancia Estadística (Wilcoxon / t-Student)"]
+        J --> M["Explicabilidad XAI (Valores SHAP & Permutation Importance)"]
     end
 
-    subgraph F67["FASES 6 Y 7: APLICACIÓN OPERACIONAL Y SOFTWARE"]
-        SOP["Protocolo SOP de Control de Calidad y Despacho en Cancha"]:::process
-        DEC_CANJE{"¿Discrepancia > Tolerancia de Canje Reglamentaria ENAMI?"}:::decision
-        ARB["Soporte Técnico de Decisión: Apertura Sobre 3 (Arbitraje)"]:::process
-        ACCEPT["Aceptación de Liquidación Oficial de Canje"]:::process
-        APP[/"Software Interactivo en Streamlit (app.py): Inferencia y Semáforo"/]:::ui
+    subgraph S5["FASE 5: MODELO ECONÓMICO Y FINANCIERO"]
+        M --> N["Tarifas Oficiales ENAMI 2023-2024"]
+        N --> O["Simulación Financiera: Liquidación Cancha vs Canje vs RNA"]
+        O --> P["Cuantificación del Ahorro y Pérdidas Evitadas"]
     end
 
-    END_NODE(["Fin: Modelo Validado e Integrado Operacionalmente"]):::terminal
+    subgraph S6["FASE 6: ADOPCIÓN, OPERACIÓN Y ENAMI"]
+        P --> Q["Integración Operacional en Pequeña Minería"]
+        Q --> R["SOP de Despacho & Gestión de Protocolo de 3 Sobres ENAMI"]
+    end
 
-    START --> DB
-    DB --> EDA
-    EDA --> SPLIT
-    SPLIT -->|"Muestras Entrenamiento"| SCALER
-    SCALER --> BASE
-    SCALER --> MOD_LIN
-    SCALER --> MOD_PROF
-    SCALER --> MOD_PROP
+    subgraph S7["FASE 7: INTERFAZ GRÁFICA (STREAMLIT)"]
+        R --> S["Desarrollo de Software Interactivo en Streamlit (app.py)"]
+        S --> T["Módulo Predictivo, Financiero y Semáforo de Despacho"]
+    end
 
-    BASE --> BENCH
-    MOD_LIN --> BENCH
-    MOD_PROF --> BENCH
-    MOD_PROP --> BENCH
-    SPLIT -.->|"Muestras Test Ciego (20%)"| BENCH
-
-    BENCH --> RESID
-    RESID --> TEST_SIG
-
-    TEST_SIG -->|"No: p >= 0.05 (Reajustar)"| MOD_PROP
-    TEST_SIG -->|"Sí: p < 0.05 (Aprobado)"| XAI
-
-    XAI --> SIM_FIN
-    ENAMI_TAR --> SIM_FIN
-    SIM_FIN --> SAVING
-    SAVING --> SOP
-    SOP --> DEC_CANJE
-
-    DEC_CANJE -->|"Sí: Brecha Crítica"| ARB
-    DEC_CANJE -->|"No: Dentro de Tolerancia"| ACCEPT
-    ARB --> APP
-    ACCEPT --> APP
-
-    APP --> END_NODE
+    subgraph S8["FASE 8: SÍNTESIS Y CONCLUSIONES"]
+        T --> U["Validación Académica, Limitaciones y Líneas Futuras"]
+    end
 ```
-
-### Guía de Simbología y Código de Colores (Estándar Informático ANSI / ISO 5807)
-
-| Símbolo Gráfico | Forma Mermaid | Significado Metodológico | Color Representativo |
-| :---: | :---: | :--- | :--- |
-| **Terminal** | `([ Texto ])` | Inicio y conclusión formal del flujo del sistema. | Grafito Oscuro (`#1E293B`) |
-| **Almacén / Archivo** | `[( Texto )]` / `[/ Texto /]` | Base de datos maestra, datasets y documentos tarifarios ENAMI. | Azul Cielo (`#E0F2FE` / `#0284C7`) |
-| **Proceso** | `[ Texto ]` | Operaciones deterministas, transformaciones ETL y cálculos matemáticos. | Lavanda (`#EDE9FE` / `#7C3AED`) |
-| **Subrutina / Modelo** | `[[ Texto ]]` | Modelos de Machine Learning y Redes Neuronales Artificiales. | Índigo Técnico (`#E0E7FF` / `#4338CA`) |
-| **Decisión / Validación** | `{ Texto }` | Ramificaciones condicionales, partición y contraste de hipótesis. | Ámbar Cálido (`#FEF3C7` / `#D97706`) |
-| **Evaluación y XAI** | `[ Texto ]` | Diagnóstico de residuos, métricas de error y explicabilidad SHAP. | Verde Esmeralda (`#DCFCE7` / `#16A34A`) |
-| **Económico / Financiero**| `[ Texto ]` | Liquidaciones monetarias, tarifas y cuantificación de ahorros. | Naranja Coral (`#FFEDD5` / `#EA580C`) |
-| **Interfaz de Usuario** | `[/ Texto /]` | Frontend interactivo y herramientas visuales en Streamlit. | Verde Azulado / Teal (`#CCFBF1` / `#0D9488`) |
 
 ---
 
@@ -330,27 +279,12 @@ Para cada uno de los 24 meses analizados, se simulan 3 estados financieros:
   * No requiere hardware de alto cómputo para la inferencia diaria (ejecución en segundos en cualquier computador de faena).
 
 ### 6.2. Procedimiento Operativo Estándar (SOP) de Despacho y Blending
-Protocolo estandarizado de 5 pasos para el Jefe de Mina o Geólogo de Control de Calidad:
+Protocolo de 5 pasos para el Jefe de Mina o Geólogo de Control de Calidad:
 
-```mermaid
-flowchart LR
-    classDef terminal fill:#1E293B,stroke:#0F172A,stroke-width:2px,color:#FFFFFF,font-size:12px,font-weight:bold;
-    classDef process fill:#EDE9FE,stroke:#7C3AED,stroke-width:2px,color:#4C1D95,font-size:12px;
-    classDef model fill:#E0E7FF,stroke:#4338CA,stroke-width:2px,color:#1E1B4B,font-size:12px,font-weight:bold;
-    classDef decision fill:#FEF3C7,stroke:#D97706,stroke-width:2px,color:#92400E,font-size:12px,font-weight:bold;
-    classDef action fill:#DCFCE7,stroke:#16A34A,stroke-width:2px,color:#14532D,font-size:12px,font-weight:bold;
-
-    P1(["Paso 1: Muestreo de Pila en Cancha"]):::process
-    P2[/"Paso 2: Ensayes Químicos (CuT, CuS)"/]:::process
-    P3[["Paso 3: Inferencia con Modelo RNA"]]:::model
-    P4{"Paso 4: ¿Ley Canje Predicha >= Ley Crítica?"}:::decision
-    P5A["Paso 5A: Despacho Directo a ENAMI / PSJ"]:::action
-    P5B["Paso 5B: Protocolo de Blending / Mezcla en Cancha"]:::process
-
-    P1 --> P2 --> P3 --> P4
-    P4 -->|"Sí: Lote Aprobado"| P5A
-    P4 -->|"No: Riesgo de Rechazo"| P5B
-    P5B -.->|"Remuestreo de Pila Homogeneizada"| P2
+```
+[Paso 1: Muestreo de Acopio] ──> [Paso 2: Ensayes Cancha (CuT, CuS)] ──> [Paso 3: Inferencia en Modelo RNA]
+                                                                                      │
+[Paso 5: Despacho a ENAMI / PSJ] <── [Paso 4: Decisión: Despacho Directo o Blending] ◄┘
 ```
 
 1. **Muestreo de Acopio:** Muestreo sistemático de la colpa chancada en cancha mediante incrementos representativos.
