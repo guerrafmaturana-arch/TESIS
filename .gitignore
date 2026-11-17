@@ -1,0 +1,24 @@
+# Byte-compiled / optimized files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Entornos virtuales
+.venv/
+venv/
+env/
+ENV/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# Archivos temporales de Office y sistema
+~$*.docx
+~$*.xlsx
+~$*.pptx
+Thumbs.db
+.DS_Store
+
+# IDEs
+.vscode/
+.idea/
