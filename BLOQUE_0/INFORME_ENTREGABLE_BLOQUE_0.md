@@ -16,7 +16,7 @@
 
 El presente informe consolida los resultados y entregables técnicos del **Bloque 0**, etapa fundacional de la metodología de tesis. Su propósito es certificar la integridad de los datos operacionales de faena Mantos Cobrizo y las resoluciones tarifarias de compra de ENAMI para el periodo 2023–2024 ($N = 24$ balances mensuales), resolviendo tres aspectos críticos antes del modelado estadístico:
 
-1. **Homologación Dimensional:** Se eliminó la ambigüedad de leyes almacenadas en fracción decimal (`0.0155`), estandarizándolas formalmente en **puntos porcentuales ($\% \text{Cu}$)** (`1.55% Cu`), lo que otorga consistencia dimensional a las métricas del proyecto: $\text{MSE}$ en $(\% \text{Cu})^2$, $\text{RMSE}$ y $\text{MAE}$ en $\% \text{Cu}$, y $\text{NRMSE/MAPE}$ en porcentaje relativo ($\%$).
+1. **Homologación Dimensional y Estandarización de Decimales:** Se eliminó la ambigüedad de leyes almacenadas en fracción decimal (`0.0155`), estandarizándolas formalmente en **puntos porcentuales ($\% \text{Cu}$)** y aplicando un formato estricto y uniforme de **exactamente dos decimales (`0.00`)** para todas las variables de ley (`Cancha_CuT`, `Cancha_CuS`, `Cancha_CuIn`, `PSJ_CuT`, `Canje_CuT`, etc.), con tonelaje entero (`#,##0`). Esto otorga total consistencia visual y dimensional a las métricas del proyecto: $\text{MSE}$ en $(\% \text{Cu})^2$, $\text{RMSE}$ y $\text{MAE}$ en $\% \text{Cu}$, y $\text{NRMSE/MAPE}$ en porcentaje relativo ($\%$).
 2. **Reconciliación Matemática de la Métrica "MECM = 26%":** Se demostró algebraicamente que el error del $26\%$ atribuido a la línea base histórica en la presentación del Dr. José Delgado corresponde al **NRMSE** (Normalized Root Mean Square Error, $\text{NRMSE} = 25.98\% \approx 26.0\%$) o al **MAPE** ($25.05\%$). El error cuadrático absoluto es $\text{MSE} = 0.138 \, (\% \text{Cu})^2$ y la desviación estándar empírica es $\text{RMSE} = 0.372\% \text{Cu}$, con una sobreestimación sistemática promedio en cancha de $+0.340\% \text{Cu}$.
 3. **Consolidación Tarifaria Oficial ENAMI:** Se extrajeron y estructuraron los parámetros comerciales oficiales vigentes para **Minerales de Concentración (Sulfuros)** de las 24 circulares mensuales de ENAMI (2023–2024), cubriendo el precio del cobre LME, tipo de cambio observado, tarifa base de flotación (2.5% Cu), escala por 1% Cu, y cobranzas de estabilización.
 
@@ -30,30 +30,30 @@ A partir del archivo maestro `Data Cobrizo.xlsx`, se extrajeron los 24 meses con
 
 | Periodo | Cancha Ton (t) | Cancha CuT (%) | Cancha CuS (%) | Cancha CuIn (%) | PSJ CuT (%) | Canje CuT (%) | Canje CuS (%) | Canje CuIn (%) | Discrepancia Cancha-Canje (%Cu) |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **2023-01** | 11,559 | 2.16 | 0.17 | 1.99 | 1.41 | **1.55** | 0.21 | 1.340 | +0.610 |
-| **2023-02** | 9,972 | 1.76 | 0.14 | 1.62 | 1.33 | **1.41** | 0.16 | 1.250 | +0.350 |
-| **2023-03** | 12,765 | 1.73 | 0.16 | 1.57 | 1.55 | **1.49** | 0.21 | 1.280 | +0.240 |
-| **2023-04** | 10,530 | 1.66 | 0.14 | 1.52 | 1.38 | **1.38** | 0.15 | 1.232 | +0.280 |
-| **2023-05** | 11,167 | 1.80 | 0.13 | 1.68 | 1.26 | **1.24** | 0.14 | 1.100 | +0.560 |
-| **2023-06** | 12,393 | 1.77 | 0.13 | 1.64 | 1.43 | **1.34** | 0.17 | 1.170 | +0.430 |
-| **2023-07** | 11,349 | 1.75 | 0.13 | 1.63 | 1.41 | **1.37** | 0.19 | 1.190 | +0.380 |
-| **2023-08** | 11,208 | 1.74 | 0.12 | 1.62 | 1.54 | **1.52** | 0.17 | 1.350 | +0.220 |
-| **2023-09** | 11,804 | 2.01 | 0.12 | 1.89 | 1.66 | **1.55** | 0.27 | 1.280 | +0.460 |
-| **2023-10** | 10,716 | 2.21 | 0.26 | 1.95 | 1.77 | **1.79** | 0.17 | 1.620 | +0.420 |
-| **2023-11** | 11,170 | 2.47 | 0.20 | 2.27 | 2.26 | **2.27** | 0.25 | 2.020 | +0.200 |
-| **2023-12** | 11,194 | 1.72 | 0.12 | 1.60 | 1.37 | **1.35** | 0.21 | 1.150 | +0.370 |
-| **2024-01** | 8,538 | 1.49 | 0.12 | 1.37 | 1.37 | **1.41** | 0.14 | 1.360 | +0.080 |
-| **2024-02** | 7,102 | 1.61 | 0.14 | 1.47 | 1.37 | **1.37** | 0.14 | 1.330 | +0.240 |
-| **2024-03** | 10,040 | 1.56 | 0.15 | 1.41 | 1.19 | **1.19** | 0.12 | 1.140 | +0.370 |
-| **2024-04** | 11,374 | 1.62 | 0.14 | 1.48 | 1.15 | **1.15** | 0.12 | 1.090 | +0.470 |
-| **2024-05** | 11,342 | 1.58 | 0.13 | 1.45 | 1.14 | **1.14** | 0.11 | 1.100 | +0.440 |
-| **2024-06** | 12,751 | 1.76 | 0.15 | 1.61 | 1.68 | **1.70** | 0.20 | 1.700 | +0.060 |
-| **2024-07** | 12,468 | 1.84 | 0.16 | 1.68 | 1.57 | **1.57** | 0.17 | 1.560 | +0.270 |
-| **2024-08** | 13,169 | 1.95 | 0.15 | 1.80 | 1.41 | **1.43** | 0.16 | 1.410 | +0.520 |
-| **2024-09** | 14,172 | 1.64 | 0.16 | 1.48 | 1.46 | **1.48** | 0.15 | 1.470 | +0.160 |
-| **2024-10** | 16,226 | 1.66 | 0.14 | 1.51 | 1.27 | **1.27** | 0.16 | 1.240 | +0.390 |
-| **2024-11** | 17,142 | 1.62 | 0.15 | 1.47 | 1.31 | **1.32** | 0.15 | 1.300 | +0.300 |
-| **2024-12** | 16,553 | 1.41 | 0.12 | 1.29 | 1.04 | **1.06** | 0.12 | 1.050 | +0.350 |
+| **2023-01** | 11,559 | 2.16 | 0.17 | 1.99 | 1.41 | **1.55** | 0.21 | 1.34 | +0.61 |
+| **2023-02** | 9,972 | 1.76 | 0.14 | 1.62 | 1.33 | **1.41** | 0.16 | 1.25 | +0.35 |
+| **2023-03** | 12,765 | 1.73 | 0.16 | 1.57 | 1.55 | **1.49** | 0.21 | 1.28 | +0.24 |
+| **2023-04** | 10,530 | 1.66 | 0.14 | 1.52 | 1.38 | **1.38** | 0.15 | 1.23 | +0.28 |
+| **2023-05** | 11,167 | 1.80 | 0.13 | 1.68 | 1.26 | **1.24** | 0.14 | 1.10 | +0.56 |
+| **2023-06** | 12,393 | 1.77 | 0.13 | 1.64 | 1.43 | **1.34** | 0.17 | 1.17 | +0.43 |
+| **2023-07** | 11,349 | 1.75 | 0.13 | 1.63 | 1.41 | **1.37** | 0.19 | 1.19 | +0.38 |
+| **2023-08** | 11,208 | 1.74 | 0.12 | 1.62 | 1.54 | **1.52** | 0.17 | 1.35 | +0.22 |
+| **2023-09** | 11,804 | 2.01 | 0.12 | 1.89 | 1.66 | **1.55** | 0.27 | 1.28 | +0.46 |
+| **2023-10** | 10,716 | 2.21 | 0.26 | 1.95 | 1.77 | **1.79** | 0.17 | 1.62 | +0.42 |
+| **2023-11** | 11,170 | 2.47 | 0.20 | 2.27 | 2.26 | **2.27** | 0.25 | 2.02 | +0.20 |
+| **2023-12** | 11,194 | 1.72 | 0.12 | 1.60 | 1.37 | **1.35** | 0.21 | 1.15 | +0.37 |
+| **2024-01** | 8,538 | 1.49 | 0.12 | 1.37 | 1.37 | **1.41** | 0.14 | 1.36 | +0.08 |
+| **2024-02** | 7,102 | 1.61 | 0.14 | 1.47 | 1.37 | **1.37** | 0.14 | 1.33 | +0.24 |
+| **2024-03** | 10,040 | 1.56 | 0.15 | 1.41 | 1.19 | **1.19** | 0.12 | 1.14 | +0.37 |
+| **2024-04** | 11,374 | 1.62 | 0.14 | 1.48 | 1.15 | **1.15** | 0.12 | 1.09 | +0.47 |
+| **2024-05** | 11,342 | 1.58 | 0.13 | 1.45 | 1.14 | **1.14** | 0.11 | 1.10 | +0.44 |
+| **2024-06** | 12,751 | 1.76 | 0.15 | 1.61 | 1.68 | **1.70** | 0.20 | 1.70 | +0.06 |
+| **2024-07** | 12,468 | 1.84 | 0.16 | 1.68 | 1.57 | **1.57** | 0.17 | 1.56 | +0.27 |
+| **2024-08** | 13,169 | 1.95 | 0.15 | 1.80 | 1.41 | **1.43** | 0.16 | 1.41 | +0.52 |
+| **2024-09** | 14,172 | 1.64 | 0.16 | 1.48 | 1.46 | **1.48** | 0.15 | 1.47 | +0.16 |
+| **2024-10** | 16,226 | 1.66 | 0.14 | 1.51 | 1.27 | **1.27** | 0.16 | 1.24 | +0.39 |
+| **2024-11** | 17,142 | 1.62 | 0.15 | 1.47 | 1.31 | **1.32** | 0.15 | 1.30 | +0.30 |
+| **2024-12** | 16,553 | 1.41 | 0.12 | 1.29 | 1.04 | **1.06** | 0.12 | 1.05 | +0.35 |
 
 ### 2.2. Certificación de Calidad de Datos
 * **Valores Faltantes:** $0$ datos nulos en todas las columnas.
