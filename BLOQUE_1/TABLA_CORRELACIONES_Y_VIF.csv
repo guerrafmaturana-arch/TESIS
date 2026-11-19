@@ -1,0 +1,5 @@
+Variable,Pearson_r,Pearson_p_val,Spearman_rho,Spearman_p_val,Informacion_Mutua,Delta_Lineal_Monotono
+Cancha_CuT,0.8347,0.0,0.7116,0.0001,0.2156,0.1231
+Cancha_CuS,0.6406,0.0007,0.5024,0.0124,0.1437,0.1382
+Cancha_CuIn,0.8168,0.0,0.6736,0.0003,0.173,0.1432
+Ratio_Solubilidad,0.1054,0.6241,-0.0002,0.9992,0.0,0.1056
