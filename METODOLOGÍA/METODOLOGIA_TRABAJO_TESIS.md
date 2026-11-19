@@ -3,18 +3,35 @@
 
 **Trabajo de Titulación para optar al título de Ingeniero Civil en Minas**  
 **Universidad de Antofagasta** — Facultad de Ingeniería, Departamento de Ingeniería en Minas  
+
 * **Autor:** Felipe Andrés Guerra Maturana  
 * **Profesor Guía:** Dr. José Delgado Vega (*Doctor en Geología, Especialista en Geoestadística y Explotaciones Mineras, École des Mines de Paris*)  
 * **Caso de Estudio:** Faena Mantos Cobrizo (Distrito Minero Los Cóndores) / ENAMI (Planta San José)  
-* **Versión Metodológica:** 2.0 (Auditada para muestra acotada $N = 24$, protocolo LOOCV sin fuga de datos y valorización comercial rigurosa)
+* **Versión Metodológica:** 3.0 (Estructura Modular por Bloques Autónomos, Auditada con Hallazgos Empíricos $N = 24$, Protocolo LOOCV sin Fuga de Datos y Valorización Comercial ENAMI)  
 
 ---
 
-## Introducción y Enfoque Metodológico Global
+## 📊 Tablero de Control y Estado de Avance por Bloques
+
+El desarrollo de la tesis se ejecuta mediante una arquitectura modular estricta de **bloques independientes** (`BLOQUE_0/` a `BLOQUE_6/`). Cada bloque contiene su propio cuaderno Jupyter pre-ejecutado con salidas renderizadas (`.ipynb`), datasets tabulares limpios (`.csv` y `.xlsx`), figuras de publicación a 200 DPI (`.png`) y su respectivo informe técnico de certificación (`INFORME_ENTREGABLE_BLOQUE_X.md`).
+
+| Bloque | Denominación del Módulo | Carpeta | Entregables Clave | Estado Metodológico |
+| :---: | :--- | :---: | :--- | :---: |
+| **Bloque 0** | **Auditoría de Datos Maestros y Tarifas ENAMI** | [`./BLOQUE_0/`](../BLOQUE_0/) | `00_auditoria_datos.ipynb`<br>`DATASET_AUDITADO_N24.csv/.xlsx`<br>`TARIFAS_ENAMI_CONSOLIDADAS_2023_2024.csv/.xlsx`<br>`INFORME_ENTREGABLE_BLOQUE_0.md` | **COMPLETADO Y SELLADO**<br>*(Auditoría Técnica v2.1)* |
+| **Bloque 1** | **Análisis Exploratorio (EDA) y Selección de Características** | [`./BLOQUE_1/`](../BLOQUE_1/) | `01_eda_caracteristicas.ipynb`<br>`TABLA_ESTADISTICOS_EDA_N24.csv/.xlsx`<br>`TABLA_MAHALANOBIS_OUTLIERS.csv/.xlsx`<br>`TABLA_CORRELACIONES_Y_VIF.csv/.xlsx`<br>`INFORME_ENTREGABLE_BLOQUE_1.md` | **COMPLETADO Y SELLADO**<br>*(Normalidad rechazada, LOOCV validado por ACF, VIF blindado)* |
+| **Bloque 2** | **Modelos de Referencia (*Baselines* bajo LOOCV)** | [`./BLOQUE_2/`](../BLOQUE_2/) | `02_baselines_loocv.ipynb`<br>Línea Base Histórica, MCO/OLS, Ridge, Lasso, ElasticNet, SVR (RBF)<br>`INFORME_ENTREGABLE_BLOQUE_2.md` | **EN DESARROLLO**<br>*(Próximo paso operativo)* |
+| **Bloque 3** | **Redes Neuronales Artificiales (RNA bajo LOOCV)** | [`./BLOQUE_3/`](../BLOQUE_3/) | `03_modelado_rna_loocv.ipynb`<br>Réplica Dr. Delgado + Grilla MLP compacta `(2,)` a `(3,2)` con $L_2$ y L-BFGS<br>`INFORME_ENTREGABLE_BLOQUE_3.md` | **PLANIFICADO** |
+| **Bloque 4** | **Post-Modelado: Residuos, Wilcoxon y XAI** | [`./BLOQUE_4/`](../BLOQUE_4/) | `04_diagnostico_xai.ipynb`<br>24 predicciones ciegas, test de Wilcoxon ($p < 0.05$), Superficie 2D, SHAP<br>`INFORME_ENTREGABLE_BLOQUE_4.md` | **PLANIFICADO** |
+| **Bloque 5** | **Modelo Económico Dual y Simulación ENAMI** | [`./BLOQUE_5/`](../BLOQUE_5/) | `05_modelo_economico_enami.ipynb`<br>Nivel 1 (Brecha Presupuestaria USD) y Nivel 2 (Ahorro Caja Real en $295{,}884\text{ t}$)<br>`INFORME_ENTREGABLE_BLOQUE_5.md` | **PLANIFICADO** |
+| **Bloque 6** | **Despliegue Operativo, SOP, Streamlit y Memoria Final** | [`./BLOQUE_6/`](../BLOQUE_6/) | `app.py` (Streamlit)<br>SOP 3 Sobres ENAMI<br>Actualización integral de `./INFORME_TESIS.docx` | **PLANIFICADO** |
+
+---
+
+## 1. Introducción y Enfoque Metodológico Global
 
 La presente metodología articula de manera rigurosa la ingeniería de minas clásica, la metalurgia extractiva del cobre, la teoría de muestreo de Pierre Gy, la ciencia de datos y el aprendizaje automático supervisado. Su propósito central es cerrar la brecha de conciliación minera que afecta a la pequeña y mediana minería de Chile, reemplazando la incertidumbre del error empírico histórico entre la cancha de acopio y el poder de compra (**ENAMI** / **Planta San José**) por un sistema predictivo parsimonioso, estadísticamente validado, interpretable y con impacto económico cuantificable.
 
-### Diagrama de Flujo Metodológico Integral (Sin Fuga de Datos)
+### 1.1. Diagrama de Flujo Metodológico Integral por Bloques
 
 ```mermaid
 flowchart TD
@@ -29,28 +46,28 @@ flowchart TD
 
     START(["Inicio: Brecha de Conciliacion y Perdidas Economicas"]):::terminal
 
-    subgraph F0["BLOQUE 0: AUDITORIA DE DATOS Y PARAMETROS"]
-        DB[("Base de Datos Mantos Cobrizo: N = 24 Balances Mensuales (2023-2024)")]:::dataStore
-        AUDIT["Homologacion de Unidades (% Cu), Formula MECM y Tarifas ENAMI Sulfuros"]:::process
+    subgraph B0["BLOQUE 0: AUDITORIA DE DATOS MAESTROS Y TARIFAS (COMPLETADO)"]
+        DB[("Base Maestra Mantos Cobrizo: N = 24 Balances Mensuales (2023-2024)")]:::dataStore
+        AUDIT["Homologacion %Cu (2 Dec), Romana_Ton (295k t), MECM=25.67% y Tarifas ENAMI"]:::process
     end
 
-    subgraph F1["FASE 1: EDA Y ANALISIS DE CARACTERISTICAS"]
-        EDA["EDA: Descriptivos, Shapiro-Wilk, Mahalanobis, Autocorrelacion"]:::process
-        FEAT["Feature Analysis: Pearson vs Spearman, Ratio Solubilidad, VIF con Constante"]:::process
+    subgraph B1["BLOQUE 1: EDA, SELECCION DE CARACTERISTICAS Y VIF (COMPLETADO)"]
+        EDA["EDA: Shapiro-Wilk (No Normal), Mahalanobis (Oct-23/Nov-23), ACF (Ruido Blanco)"]:::process
+        FEAT["Feature Analysis: Pearson vs Spearman, Ratio Solubilidad, VIF con Constante (<5 vs >4000)"]:::process
     end
 
-    subgraph F23["FASES 2 Y 3: VALIDACION LOOCV ANIDADA (SIN DATA LEAKAGE)"]
+    subgraph B23["BLOQUES 2 Y 3: MODELADO Y VALIDACION LOOCV ANIDADA (SIN DATA LEAKAGE)"]
         LOOCV{"Bucle Externo LOOCV (k = 1..24): 23 Train / 1 Test Ciego"}:::decision
         SCALER["StandardScaler fit_transform solo en 23 Train (transform en 1 Test)"]:::process
-        INNER_CV["CV Interna (K-Fold) para Seleccion de Hiperparametros y Capas Ocultas"]:::process
+        INNER_CV["CV Interna (K-Fold K=5) para Hiperparametros y Regularizacion L2"]:::process
         BASE["Linea Base Operacional: Prediccion Directa de Cancha"]:::process
         MOD_LIN[["Modelos Parametricos: OLS, Ridge (L2), Lasso (L1), ElasticNet"]]:::model
         MOD_SVR[["Benchmark No Lineal: SVR (Kernel RBF)"]]:::model
         MOD_PROF[["RNA Referencia (Dr. Delgado): MLP Base (CuT, CuS)"]]:::model
-        MOD_PROP[["RNA Propia Optimizada: Grilla MLP Compacta + L-BFGS / L2"]]:::model
+        MOD_PROP[["RNA Propia Optimizada: Grilla MLP Parsimoniosa + L-BFGS / L2"]]:::model
     end
 
-    subgraph F4["FASE 4: EVALUACION OUT-OF-SAMPLE (N = 24), RESIDUOS Y XAI"]
+    subgraph B4["BLOQUE 4: EVALUACION OUT-OF-SAMPLE (N = 24), RESIDUOS Y XAI"]
         OOS["Consolidacion de 24 Predicciones Ciegas en Orden Cronologico"]:::evaluation
         BENCH["Benchmarking Multimetrico: MSE, RMSE, MAE, MAPE, NRMSE y R2"]:::evaluation
         RESID["Diagnostico de Residuos (N=24): Shapiro-Wilk, Breusch-Pagan, Durbin-Watson"]:::evaluation
@@ -58,18 +75,19 @@ flowchart TD
         XAI["Explicabilidad XAI: Superficie de Respuesta 2D, SHAP (Kernel) y Permutacion"]:::evaluation
     end
 
-    subgraph F5["FASE 5: MODELO ECONOMICO DUAL (ENAMI SULFUROS 2023-2024)"]
-        ENAMI_TAR[/"Resoluciones Tarifarias Oficiales ENAMI (2023-2024)"/]:::dataStore
+    subgraph B5["BLOQUE 5: MODELO ECONOMICO DUAL (ENAMI SULFUROS 2023-2024)"]
+        ENAMI_TAR[/"24 Circulares Oficiales ENAMI Sulfuros (Flotacion Base 2.5% + Escala 1%)"/]:::dataStore
         SIM_BUDGET["Nivel 1: Reduccion del Error de Valorizacion Presupuestaria (USD)"]:::finance
-        SIM_CASH["Nivel 2: Ahorro Real de Caja (Falsos Fletes, Blending y Contraanalisis)"]:::finance
+        SIM_CASH["Nivel 2: Ahorro Real de Caja (Falsos Fletes, Blending y Sobre 2) con Romana"]:::finance
     end
 
-    subgraph F67["FASES 6 Y 7: PROTOCOLO OPERACIONAL Y SOFTWARE"]
-        SOP["SOP de Despacho, Blending y Control de Calidad en Cancha"]:::process
+    subgraph B6["BLOQUE 6: PROTOCOLO OPERACIONAL, STREAMLIT Y MEMORIA FINAL"]
+        SOP["SOP de Despacho, Blending y Muestreo en Cancha"]:::process
         DEC_S2{"Discrepancia Sobre 1 ENAMI vs RNA > Umbral de Alerta?"}:::decision
-        S2["Activar Contraanalisis Certificado (Sobre 2) -> Base Legal para Sobre 3"]:::process
-        ACCEPT["Aceptar Liquidacion Oficial ENAMI (Ahorro Costo Laboratorio)"]:::process
-        APP[/"Prototipo Interactivo Streamlit (app.py): Inferencia, Finanzas y Semaforo"/]:::ui
+        S2["Activar Contraanalisis Certificado (Sobre 2) -> Base Legal Sobre 3"]:::process
+        ACCEPT["Aceptar Liquidacion Oficial ENAMI (Ahorro Laboratorio)"]:::process
+        APP[/"Prototipo Streamlit (app.py): Inferencia, Finanzas y Semaforo"/]:::ui
+        DOCX[/"Actualizacion Integral de Memoria de Titulo (INFORME_TESIS.docx)"/]:::process
     end
 
     END_NODE(["Fin: Modelo Validado, Auditado y Transferible a Faena"]):::terminal
@@ -103,298 +121,196 @@ flowchart TD
     DEC_S2 -->|"No: Dentro de Banda Esperada"| ACCEPT
     S2 --> APP
     ACCEPT --> APP
-    APP --> END_NODE
+    APP --> DOCX --> END_NODE
 ```
 
-> **Principio metodológico clave del diagrama:** Toda selección de arquitectura, regularización e hiperparámetros ocurre estrictamente dentro de la validación cruzada interna (`INNER_CV`). No existe retroalimentación desde la evaluación final (`TEST_SIG`) hacia el reajuste del modelo, garantizando cero fuga de información (*zero test leakage*).
-
-### Guía de Simbología y Código de Colores (Estándar ANSI / ISO 5807)
-
-| Símbolo Gráfico | Forma Mermaid | Significado Metodológico | Color Representativo |
-| :---: | :---: | :--- | :--- |
-| **Terminal** | `([ Texto ])` | Inicio y cierre formal del flujo de investigación. | Grafito Oscuro (`#1E293B`) |
-| **Almacén / Archivo** | `[( Texto )]` / `[/ Texto /]` | Base de datos maestra y documentos tarifarios ENAMI. | Azul Cielo (`#E0F2FE` / `#0284C7`) |
-| **Proceso** | `[ Texto ]` | Transformaciones ETL, protocolos y cálculos deterministas. | Lavanda (`#EDE9FE` / `#7C3AED`) |
-| **Subrutina / Modelo** | `[[ Texto ]]` | Algoritmos estadísticos y redes neuronales. | Índigo Técnico (`#E0E7FF` / `#4338CA`) |
-| **Decisión / Validación** | `{ Texto }` | Particiones de validación, pruebas estadísticas y reglas de negocio. | Ámbar Cálido (`#FEF3C7` / `#D97706`) |
-| **Evaluación y XAI** | `[ Texto ]` | Diagnóstico de residuos, métricas *out-of-sample* y explicabilidad. | Verde Esmeralda (`#DCFCE7` / `#16A34A`) |
-| **Económico / Financiero** | `[ Texto ]` | Valorización presupuestaria y ahorro operacional real. | Naranja Coral (`#FFEDD5` / `#EA580C`) |
-| **Interfaz de Usuario** | `[/ Texto /]` | Aplicación interactiva en Streamlit para transferencia operativa. | Verde Azulado (`#CCFBF1` / `#0D9488`) |
+> **Principio Metodológico de Cero Fuga de Información (*Zero Data Leakage*):** Toda selección de arquitectura, escalado Z-score, optimización de hiperparámetros y regularización ocurre estrictamente dentro de los $23$ datos de entrenamiento de cada iteración LOOCV. La muestra de prueba de cada mes se mantiene completamente ciega hasta el momento de inferencia.
 
 ---
 
-## BLOQUE 0: Auditoría de Datos Maestros, Unidades y Parámetros Base
+## 2. BLOQUE 0: Auditoría de Datos Maestros, Unidades y Parámetros Base
+> **Estado:** ✅ **COMPLETADO, AUDITADO Y SELLADO**  
+> **Carpeta:** [`./BLOQUE_0/`](../BLOQUE_0/) | **Entregable Principal:** [`00_auditoria_datos.ipynb`](../BLOQUE_0/00_auditoria_datos.ipynb)
 
-Antes de ejecutar análisis estadísticos o entrenar modelos, se establece una línea base auditable y libre de ambigüedades dimensionales:
+Antes de cualquier modelado estadístico, se estableció una base de datos certificada, auditable y libre de ambigüedades dimensionales o de formato:
 
-1. **Verificación de Escala de Leyes:** Todas las leyes de cobre extraídas de `Data Cobrizo.xlsx` se estandarizan explícitamente en **puntos porcentuales de cobre ($\%\text{Cu}$)** (por ejemplo, transformar `0.0155` a `1.55`), de modo que:
-   * $\text{MSE}$ se exprese en $(\%\text{Cu})^2$.
-   * $\text{RMSE}$ y $\text{MAE}$ se interpreten directamente en $\%\text{Cu}$.
-   * $\text{MAPE}$ y $\text{NRMSE}$ se expresen en porcentaje relativo ($\%$).
-2. **Homologación del Indicador "MECM" de Referencia:** Verificar la formulación algebraica exacta utilizada en la presentación del Dr. José Delgado para las cifras de referencia ($26\%$ histórico vs. $8.63\%$ RNA), distinguiendo rigurosamente si corresponde a **MAPE** o a **RMSE Relativo ($\text{NRMSE} = \frac{\text{RMSE}}{\bar{y}} \times 100$)**. Nunca se equiparará dimensionalmente un porcentaje relativo con el $\text{MSE}$ absoluto.
-3. **Extracción Tarifaria ENAMI (2023–2024):** Construir una tabla mensual limpia con los parámetros oficiales vigentes para **Minerales de Concentración (Sulfuros)** desde `./MATERIAL_TESIS/Precio%20mx%20Enami%202023-2024` (precio LME mensual, tipo de cambio, escala de deducción metalúrgica, cargo de maquila, ley mínima pagable y tolerancias de canje).
+1. **Homologación Dimensional y Formato de Decimales:**
+   * Todas las leyes de cobre extraídas de `Data Cobrizo.xlsx` ($N = 24$ balances mensuales, 2023–2024) fueron estandarizadas formalmente en **puntos porcentuales ($\%\text{Cu}$)** con un formato uniforme y estricto de **exactamente dos decimales (`0.00`)**, preservando los ceros a la derecha (`1.80`, `1.10`, `0.20`, `1.70`).
+   * Se incorporó el tonelaje certificado de báscula puente (`Romana_Ton`, totalizando $295{,}884.67\text{ t}$) junto al tonelaje estimado en acopio (`Cancha_Ton`, totalizando $286{,}704\text{ t}$).
+   * Esto garantiza consistencia dimensional en todo el proyecto: $\text{MSE}$ en $(\%\text{Cu})^2$, $\text{RMSE}$ y $\text{MAE}$ en $\%\text{Cu}$, y $\text{NRMSE/MAPE}$ en porcentaje relativo ($\%$).
 
----
+2. **Reconciliación Matemática de la Métrica de Referencia ("MECM = 26%"):**
+   * Se demostró algebraicamente que el error del $26\%$ reportado en la presentación del Dr. José Delgado corresponde unívocamente al **NRMSE** (*Normalized Root Mean Square Error*, $25.98\% \approx 26.0\%$ en PSJ y $25.67\% \approx 26.0\%$ en Canje) o al **MAPE** ($25.05\%$ y $24.90\%$).
+   * Se fijaron los indicadores de la línea base histórica en Canje Oficial:
+     $$\text{MSE}_{\text{Hist}} = 0.1350\,(\%\text{Cu})^2, \quad \text{RMSE}_{\text{Hist}} = 0.3674\%\text{Cu}, \quad \text{MAE}_{\text{Hist}} = 0.3404\%\text{Cu}$$
+     $$\text{Sesgo Sistemático Cancha} = +0.3404\%\text{Cu} \quad (\text{Sobreestimación en los 24 meses}), \quad R^2_{\text{Hist}} = -1.2709$$
 
-## FASE 1: Pre-Modelado — Análisis Exploratorio (EDA), Características y Preprocesamiento
-
-> **Restricción de Alcance:** En estricta coherencia con los objetivos del informe de tesis, la matriz de entrada se limita a **2 variables predictoras**: Cobre Total en cancha ($\text{CuT}_{\text{cancha}}$) y Cobre Soluble en cancha ($\text{CuS}_{\text{cancha}}$). La variable objetivo es la Ley de Canje oficial ($\text{Canje\_CuT}$), sobre $N = 24$ balances mensuales consolidados (2023–2024).
-
-### 1.1. Análisis Exploratorio y Estadístico Riguroso (EDA)
-1. **Estadísticos Descriptivos Univariados:**
-   * Tendencia central: media aritmética ($\mu$), mediana ($\tilde{x}$) y media truncada.
-   * Dispersión: varianza ($\sigma^2$), desviación estándar ($\sigma$), rango intercuartílico ($\text{IQR}$) y coeficiente de variación ($\text{CV} = \frac{\sigma}{\mu} \times 100$).
-   * Forma: coeficiente de asimetría de Fisher y curtosis.
-2. **Evaluación de Normalidad:**
-   * Test de **Shapiro-Wilk** (óptimo para $N < 50$) sobre $\text{CuT}_{\text{cancha}}$, $\text{CuS}_{\text{cancha}}$ y $\text{Canje\_CuT}$ con significancia $\alpha = 0.05$, complementado con histogramas, KDE y gráficos Q-Q.
-3. **Detección de Valores Atípicos (*Outliers*):**
-   * Regla univariada de Tukey: $[Q_1 - 1.5 \cdot \text{IQR},\; Q_3 + 1.5 \cdot \text{IQR}]$.
-   * Detección multivariada mediante la distancia de **Mahalanobis**:
-     $$D_M(x) = \sqrt{(x - \mu)^T \Sigma^{-1} (x - \mu)}$$
-     contrastada frente a $\chi^2_{2,\; 0.95}$. Los valores atípicos geológicos **no se eliminan arbitrariamente**; se investigan metalúrgicamente (cambios de frente o zonas de transición óxido-sulfuro) y se evalúa la sensibilidad del modelo con y sin ellos.
-4. **Autocorrelación Serial de la Serie Mensual:**
-   * Evaluación de la función de autocorrelación ($\text{ACF}$) sobre la secuencia mensual de leyes y del sesgo empírico para determinar si existe inercia geológica entre meses consecutivos.
-
-### 1.2. Análisis de Características (*Feature Analysis*) y Multicolinealidad
-1. **Correlación Lineal vs. Monotónica:**
-   * Contraste entre correlación de **Pearson** ($r$) y de rangos de **Spearman** ($\rho$), junto con **Información Mutua** (`mutual_info_regression`), para evidenciar componentes no lineales entre las entradas y $\text{Canje\_CuT}$.
-2. **Variables Diagnósticas (Solo para Interpretación en EDA, No como Entradas de la RNA):**
-   * **Ratio de Solubilidad:** $\text{Sol}(\%) = \frac{\text{CuS}_{\text{cancha}}}{\text{CuT}_{\text{cancha}}} \times 100$, para segmentar los 24 lotes según grado de alteración oxidada y evaluar su correlación con el sesgo empírico ($e_{\text{emp}} = \text{CuT}_{\text{cancha}} - \text{Canje\_CuT}$).
-3. **Auditoría de Multicolinealidad (VIF con Intercepto):**
-   * Cálculo del Factor de Inflación de la Varianza agregando obligatoriamente una columna constante (`sm.add_constant(X)`):
-     $$\text{VIF}_j = \frac{1}{1 - R_j^2}$$
-   * Se verifica $\text{VIF} < 5$ entre $\text{CuT}_{\text{cancha}}$ y $\text{CuS}_{\text{cancha}}$.
-   * **Justificación explícita de exclusión de $\text{CuIn}$:** Dado el balance de especies $\text{CuT} = \text{CuS} + \text{CuIn}$, incluir el Cobre Insoluble genera colinealidad exacta ($\text{VIF} = \infty$), aportando ganancia de información nula e introduciendo inestabilidad en los pesos de la red.
-
-### 1.3. Estrategia de Validación y Escalado sin Fuga de Datos (*Zero Data Leakage*)
-1. **Protocolo Principal — Validación Cruzada Dejando Uno Fuera (LOOCV):**
-   * En $N = 24$, una partición aleatoria $80\% / 20\%$ deja solo $5$ observaciones de prueba, provocando alta varianza muestral e invalidando pruebas estadísticas sobre residuos.
-   * Por ello, el protocolo principal es **LOOCV** ($24$ pliegues externos: en cada iteración se entrena con $23$ meses y se predice $1$ mes ciego). Esto genera **$24$ predicciones genuinamente fuera de muestra en orden cronológico exacto (2023–2024)**.
-2. **Protocolo Secundario — Validación Temporal (*Holdout* Prospectivo):**
-   * Complementariamente, se ejecuta una partición cronológica estricta (primeros $19$ meses entrenamiento $\rightarrow$ últimos $5$ meses prueba futura) para medir el comportamiento prospectivo del modelo hacia el futuro sin mezclar periodos.
-3. **Estandarización Z-Score Interna:**
-   * Se aplica `StandardScaler`:
-     $$z = \frac{x - \mu_{\text{train}}}{\sigma_{\text{train}}}$$
-   * **Regla estricta:** El ajuste (`fit_transform`) se ejecuta **exclusivamente** sobre los $23$ datos de entrenamiento dentro de cada pliegue LOOCV (y en cada subpliegue interno), aplicando luego `transform` al dato de prueba ciego. En caso de detectarse asimetría severa en el EDA, se evaluará en paralelo `RobustScaler`.
+3. **Consolidación Tarifaria Oficial ENAMI (Sulfuros 2023–2024):**
+   * Se procesaron y estructuraron las $24$ circulares mensuales oficiales de la Gerencia Comercial de ENAMI para **Minerales de Concentración (Sulfuros)**, consolidando el precio internacional del cobre LME ($\text{¢US\$/lb}$), tipo de cambio observado ($\text{\$/US\$}$), tarifa base de flotación a $2.5\%\text{Cu}$ ($\text{US\$/tms}$), escala por $1\%\text{Cu}$ y fondo de estabilización:
+     $$\text{Tarifa Unitaria (US\$/tms)} = \text{Tarifa Base}_{2.5\%} - \text{Escala}_{1\%} \times (2.5 - \text{Ley}_{\text{Canje}}) - \text{Cargos Reglamentarios}$$
+     $$\text{Valor Lote (USD)} = \text{TMS} \times \text{Tarifa Unitaria (US\$/tms)}$$
 
 ---
 
-## FASE 2: Modelado Paramétrico y No Lineal de Referencia (*Baselines*)
+## 3. BLOQUE 1: Análisis Exploratorio (EDA), Selección de Características y Multicolinealidad
+> **Estado:** ✅ **COMPLETADO, AUDITADO Y SELLADO**  
+> **Carpeta:** [`./BLOQUE_1/`](../BLOQUE_1/) | **Entregable Principal:** [`01_eda_caracteristicas.ipynb`](../BLOQUE_1/01_eda_caracteristicas.ipynb)
 
-Todos los modelos de contraste se evalúan bajo exactamente los mismos $24$ pliegues externos de LOOCV para garantizar comparabilidad justa.
+> **Restricción de Alcance:** La matriz de entrada del modelo predictivo se limita estrictamente a **2 variables predictoras**: Cobre Total en cancha ($\text{CuT}_{\text{cancha}}$) y Cobre Soluble en cancha ($\text{CuS}_{\text{cancha}}$). La variable objetivo es la Ley de Canje oficial ($\text{Canje\_CuT}$).
 
-### 2.1. Línea Base Operacional Tradicional
-Representa la práctica actual en faena, asumiendo que la ley liquidada en planta equivale a la ley medida en cancha:
-$$\hat{y}_{\text{Base}, i} = \text{CuT}_{\text{cancha}, i}$$
-$$\text{MSE}_{\text{Histórico}} = \frac{1}{N} \sum_{i=1}^{N} \left( \text{CuT}_{\text{cancha}, i} - \text{Canje\_CuT}_i \right)^2$$
-
-### 2.2. Regresión Lineal Clásica (MCO / OLS)
-Ajuste del plano lineal:
-$$\hat{y} = \beta_0 + \beta_1 \text{CuT}_{\text{cancha}} + \beta_2 \text{CuS}_{\text{cancha}}$$
-Permite cuantificar cuánto error se reduce únicamente corrigiendo el sesgo sistemático lineal de cancha.
-
-### 2.3. Regresiones Lineales Regularizadas (Ridge, Lasso y ElasticNet)
-Evaluadas con optimización de hiperparámetros ($\lambda^*$) estrictamente dentro del conjunto de entrenamiento de cada pliegue (`RidgeCV`, `LassoCV`, `ElasticNetCV`):
-1. **Ridge ($L_2$):**
-   $$\mathcal{L}_{\text{Ridge}} = \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 + \lambda \sum_{j=1}^{p} \beta_j^2$$
-2. **Lasso ($L_1$):**
-   $$\mathcal{L}_{\text{Lasso}} = \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 + \lambda \sum_{j=1}^{p} |\beta_j|$$
-3. **ElasticNet ($L_1 + L_2$):**
-   $$\mathcal{L}_{\text{ElasticNet}} = \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 + \alpha \rho \sum_{j=1}^{p} |\beta_j| + \frac{\alpha (1 - \rho)}{2} \sum_{j=1}^{p} \beta_j^2$$
-
-### 2.4. Benchmark No Lineal para Muestras Pequeñas: SVR (Kernel RBF)
-Se incluye una Máquina de Soporte Vectorial para regresión (`SVR` con kernel radial RBF) como rival no lineal directo de la red neuronal en régimen de datos acotados ($N = 24$), validando si el Perceptrón Multicapa ofrece ventajas reales frente a métodos de kernel.
+### 3.1. Hallazgos del Análisis Exploratorio y Estadístico Riguroso
+1. **Estadísticos Descriptivos Univariados ($N = 24$):**
+   * $\text{Cancha\_CuT}$: Media $1.772\%\text{Cu}$, Mediana $1.735\%\text{Cu}$, Media Truncada al $10\%$ $1.748\%\text{Cu}$, Desv. Est. $0.241\%\text{Cu}$, $\text{CV} = 13.6\%$, Asimetría $+1.268$, Curtosis $+1.443$.
+   * $\text{Cancha\_CuS}$: Media $0.147\%\text{Cu}$, Mediana $0.140\%\text{Cu}$, Desv. Est. $0.031\%\text{Cu}$, $\text{CV} = 20.9\%$, Asimetría $+2.277$, Curtosis $+5.862$.
+   * $\text{Canje\_CuT}$: Media $1.431\%\text{Cu}$, Mediana $1.395\%\text{Cu}$, Desv. Est. $0.249\%\text{Cu}$, $\text{CV} = 17.4\%$, Asimetría $+1.541$, Curtosis $+3.554$.
+2. **Evaluación de Normalidad (Shapiro-Wilk, $\alpha = 0.05$):**
+   * $\text{Cancha\_CuT}$ ($W = 0.8871, p = 0.0116 < 0.05$), $\text{Cancha\_CuS}$ ($W = 0.7472, p = 0.00003 < 0.05$) y $\text{Canje\_CuT}$ ($W = 0.8787, p = 0.0078 < 0.05$) **rechazan formalmente la normalidad**.
+   * *Fundamento geotécnico:* Las leyes naturales exhiben colas asimétricas positivas propias de enriquecimiento hidrotermal y supergeno, invalidando supuestos gaussianos lineales y justificando el uso de aproximadores no lineales no paramétricos (**Redes Neuronales**).
+3. **Detección y Justificación de Atípicos (*Outliers*):**
+   * Detección multivariada mediante Distancia de **Mahalanobis** ($D_M(x)$ frente a $\chi^2_{2, 0.95} = 5.9915$): Se detectaron dos meses anómalos:
+     * **Octubre 2023:** $D_M = 3.7747, D_M^2 = 14.2481, p = 0.0008$ ($\text{CuT} = 2.21\%, \text{CuS} = 0.26\%$). Pulso de alta solubilidad (crisocola/malaquita).
+     * **Noviembre 2023:** $D_M = 2.9103, D_M^2 = 8.4700, p = 0.0145$ ($\text{CuT} = 2.47\%, \text{CuS} = 0.20\%$). Explotación de frente competente rico en calcocina/bornita.
+   * *Decisión de Ingeniería:* **NO se eliminan arbitrariamente**. Representan frentes geológicos reales validados por ENAMI (Nov-23 liquidó a $2.27\%\text{Cu}$). Se retienen para obligar a que la red neuronal aprenda a regularizar sobre frentes de alta ley mediante decaimiento de pesos ($L_2$).
+4. **Autocorrelación Serial Temporal (ACF) y Validación de LOOCV:**
+   * La función de autocorrelación sobre el sesgo empírico ($e_{\text{emp}} = \text{CuT}_{\text{cancha}} - \text{Canje\_CuT}$) arrojó un rezago de orden 1 de $r_1 = -0.0866$, contenido dentro de la banda de ruido blanco de Bartlett al $95\%$ ($\pm 0.4001$).
+   * *Conclusión metodológica:* El sesgo de acopio carece de memoria serial. Queda **plenamente justificado el protocolo LOOCV** ($24$ pliegues ciegos independientes) sin riesgo de sesgo temporal.
+5. **Dependencia No Lineal y Ratio de Solubilidad:**
+   * Brecha entre correlación de Pearson y Spearman ($\Delta = 0.1231$ en CuT; $\Delta = 0.1382$ en CuS) e Información Mutua positiva ($\text{MI} = 0.2156$).
+   * El Ratio de Solubilidad ($\text{Sol}\% = \frac{\text{CuS}}{\text{CuT}} \times 100$, promedio $8.39\%$) no aporta información adicional y se descarta como tercer predictor para mantener la parsimonia.
+6. **Auditoría de Multicolinealidad (VIF con Intercepto):**
+   * Espacio propuesto $[\text{CuT}_{\text{cancha}}, \text{CuS}_{\text{cancha}}]$ con constante (`sm.add_constant`): $\text{VIF} = 1.8045 < 5.0$ (**Colinealidad baja, óptima**).
+   * Modelo con Cobre Insoluble ($\text{CuIn}$): $\text{VIF}_{\text{CuT}} = 4{,}754.0$ y $\text{VIF}_{\text{CuIn}} = 4{,}004.1$ (tiende a $\infty$).
+   * *Blindaje metodológico:* La identidad de balance $\text{CuT} = \text{CuS} + \text{CuIn}$ genera colinealidad exacta. Se **excluye categóricamente $\text{CuIn}$**, ratificando la matriz en exactamente $2$ predictores.
 
 ---
 
-## FASE 3: Modelado No Lineal con Redes Neuronales Artificiales (RNA)
+## 4. BLOQUE 2: Modelado Paramétrico y No Lineal de Referencia (*Baselines* bajo LOOCV)
+> **Estado:** 🔄 **EN DESARROLLO / PRÓXIMO PASO OPERATIVO**  
+> **Carpeta:** [`./BLOQUE_2/`](../BLOQUE_2/) | **Entregable Principal:** `02_baselines_loocv.ipynb`
 
-### 3.1. Fundamentación Metalúrgica de la No Linealidad
-De acuerdo con la **Teoría de Muestreo de Pierre Gy**, la discrepancia entre cancha y canje presenta comportamiento no lineal debido a la interacción entre la **Heterogeneidad Constitucional** (proporción variable de óxidos friables y sulfuros competentes) y la **Heterogeneidad de Distribución** (segregación gravitacional de finos en acopio, carguío y transporte). El Perceptrón Multicapa (**MLP**) actúa como aproximador universal capaz de modelar esta superficie de respuesta sin imponer supuestos paramétricos lineales.
+Todos los modelos de contraste se evaluarán bajo exactamente los mismos $24$ pliegues externos de validación cruzada dejando uno fuera (**LOOCV**), aplicando escalado Z-score (`StandardScaler`) ajustado **exclusivamente en los 23 meses de entrenamiento de cada pliegue** (*Zero Data Leakage*).
 
-### 3.2. Modelo de Referencia del Profesor (Dr. José Delgado Vega)
-* Reproducción fiel de la topología base documentada por el profesor guía con entradas $(\text{CuT}_{\text{cancha}}, \text{CuS}_{\text{cancha}})$ y salida $\text{Canje\_CuT}$, auditando su desempeño bajo el mismo esquema LOOCV y contrastando las métricas absolutas ($\text{MSE}$, $\text{RMSE}$) junto con el indicador porcentual reportado ($26\%$ vs. $8.63\%$).
+### 4.1. Modelos a Implementar y Evaluar
+1. **Línea Base Operacional Tradicional (Cancha):**
+   $$\hat{y}_{\text{Base}, i} = \text{CuT}_{\text{cancha}, i}$$
+2. **Regresión Lineal Clásica (MCO / OLS):**
+   $$\hat{y} = \beta_0 + \beta_1 \text{CuT}_{\text{cancha}} + \beta_2 \text{CuS}_{\text{cancha}}$$
+   Cuantifica la ganancia obtenida exclusivamente por corregir el sesgo sistemático lineal.
+3. **Regresiones Lineales Regularizadas (Ridge, Lasso, ElasticNet):**
+   * **Ridge ($L_2$):** $\mathcal{L} = \sum (y - \hat{y})^2 + \lambda \sum \beta_j^2$.
+   * **Lasso ($L_1$):** $\mathcal{L} = \sum (y - \hat{y})^2 + \lambda \sum |\beta_j|$.
+   * **ElasticNet ($L_1 + L_2$):** Combinación convexa de penalizaciones.
+   * *Regla de ejecución:* La optimización del hiperparámetro de penalización ($\lambda^*$) se efectúa estrictamente mediante validación cruzada interna (`RidgeCV`, `LassoCV`, `ElasticNetCV`) dentro de los $23$ datos de entrenamiento de cada pliegue.
+4. **Benchmark No Lineal para Muestras Pequeñas: SVR (Kernel RBF):**
+   * Máquina de Soporte Vectorial para regresión con kernel gaussiano radial, como rival no lineal directo de la red neuronal en régimen acotado ($N = 24$).
 
-### 3.3. Diseño e Iteración de Arquitecturas MLP Parsimoniosas (Modelo Propio)
-En cumplimiento del objetivo específico de iterar capas ocultas y resguardando el **principio de parsimonia** (mantener el número de parámetros libres acotado frente a $N_{\text{train}} = 23$), se evalúa una grilla controlada de topologías mediante validación cruzada anidada (*Nested CV*, K-Fold interno $K = 5$):
+### 4.2. Criterios de Aprobación para Avanzar a Bloque 3
+* Implementación de la función maestra `loocv_evaluate(model, X, y)` sin fuga de datos.
+* Consolidación de tabla de métricas fuera de muestra ($\text{MSE}$, $\text{RMSE}$, $\text{MAE}$, $\text{MAPE}$, $\text{NRMSE}$, $R^2$).
+* Exportación de tablas en CSV/XLSX, figuras a 200 DPI y el informe técnico `BLOQUE_2/INFORME_ENTREGABLE_BLOQUE_2.md`.
 
-| Topología Evaluada (`hidden_layer_sizes`) | Capas Ocultas | Parámetros Libres ($w$ y $b$) | Propósito Experimental |
+---
+
+## 5. BLOQUE 3: Modelado No Lineal con Redes Neuronales Artificiales (RNA bajo LOOCV)
+> **Estado:** 📋 **PLANIFICADO**  
+> **Carpeta:** [`./BLOQUE_3/`](../BLOQUE_3/) | **Entregable Principal:** `03_modelado_rna_loocv.ipynb`
+
+### 5.1. Fundamentación Metalúrgica de la No Linealidad (Pierre Gy)
+De acuerdo con la **Teoría de Muestreo de Pierre Gy**, la discrepancia cancha-canje presenta no linealidad debido a la interacción entre la **Heterogeneidad Constitucional** (proporción variable de óxidos friables y sulfuros competentes) y la **Heterogeneidad de Distribución** (segregación gravitacional de finos durante carguío y acopio). El Perceptrón Multicapa (**MLP**) modela esta superficie compleja sin supuestos rígidos.
+
+### 5.2. Modelos Neuronales a Comparar
+1. **Modelo de Referencia del Dr. José Delgado Vega:**
+   * Reproducción fiel de la topología base del profesor guía con entradas $(\text{CuT}, \text{CuS})$ y salida $\text{Canje\_CuT}$, evaluada bajo el mismo esquema LOOCV para contrastar el error porcentual reportado ($26\%$ vs. $8.63\%$).
+2. **Grilla de Arquitecturas Parsimoniosas Propias:**
+   * En respeto al principio de parsimonia frente a $N_{\text{train}} = 23$:
+
+| Topología (`hidden_layer_sizes`) | Capas Ocultas | Parámetros Libres ($w$ y $b$) | Propósito Experimental |
 | :---: | :---: | :---: | :--- |
-| `(2,)` | 1 | $9$ | Máxima parsimonia ($9 < 23$); menor varianza. |
+| `(2,)` | 1 | $9$ | Máxima parsimonia ($9 < 23$); varianza mínima. |
 | `(3,)` | 1 | $13$ | Equilibrio capacidad no lineal / grados de libertad. |
-| `(4,)` | 1 | $17$ | Límite superior de 1 capa oculta para $N_{\text{train}} = 23$. |
-| `(2, 2)` | 2 | $15$ | Prueba de profundidad controlada (2 capas compactas). |
-| `(3, 2)` | 2 | $20$ | Análisis empírico del punto de inicio de sobreajuste (*trade-off* sesgo-varianza). |
+| `(4,)` | 1 | $17$ | Límite superior para 1 capa oculta en $N_{\text{train}} = 23$. |
+| `(2, 2)` | 2 | $15$ | Profundidad compacta (2 capas de 2 neuronas). |
+| `(3, 2)` | 2 | $20$ | Evaluación de frontera de sobreajuste. |
 
-#### Especificaciones Técnicas de Optimización para $N = 24$
-1. **Motor Principal Recomendado (`scikit-learn` — `MLPRegressor` con `L-BFGS`):**
-   * **Optimizador:** `solver='lbfgs'` (algoritmo cuasi-Newton de segundo orden determinista). Es superior a los métodos estocásticos por mini-lotes en muestras pequeñas ($N < 1000$), ya que procesa los $23$ registros de entrenamiento simultáneamente sin ruido de gradiente.
-   * **Activación:** Evaluación controlada de `relu` ($\max(0, z)$) y `tanh` (suave y diferenciable, útil en superficies continuas pequeñas).
-   * **Regularización $L_2$ (*Weight Decay*):** Grilla $\alpha \in \{0.001,\; 0.01,\; 0.05,\; 0.1,\; 0.5\}$ seleccionada estrictamente por CV interna.
-   * **Estabilidad frente a inicialización:** Entrenamiento con múltiples semillas aleatorias fijas (por ejemplo, promedio o ensamble de $5$ a $10$ semillas) para eliminar la dependencia de una sola inicialización de pesos.
-2. **Motor Alternativo / Contrastivo (`TensorFlow / Keras`):**
-   * Si se implementa en Keras para fines comparativos o despliegue, se empleará entrenamiento **full-batch** (`batch_size = len(X_train)`) con `kernel_regularizer=regularizers.l2(lambda)`, `EarlyStopping` sobre pérdida de validación interna y tasa de aprendizaje reducida (`Adam`, $\text{lr} \le 0.005$), descartando mini-lotes pequeños (`batch_size=4`) que introducen varianza errática en $N = 24$.
+### 5.3. Especificaciones de Optimización para $N = 24$
+* **Motor Principal:** `scikit-learn` — `MLPRegressor` con solver determinista cuasi-Newton `lbfgs`, superior a métodos estocásticos por mini-lotes en muestras pequeñas ($N < 1000$).
+* **Regularización $L_2$ (*Weight Decay*):** Grilla $\alpha \in \{0.001, 0.01, 0.05, 0.1, 0.5\}$ seleccionada por CV interna (K-Fold $K = 5$).
+* **Estabilidad:** Promediado sobre múltiples semillas aleatorias fijas para eliminar varianza de inicialización.
 
 ---
 
-## FASE 4: Post-Modelado — Benchmarking, Diagnóstico de Residuos, Significancia y XAI
+## 6. BLOQUE 4: Post-Modelado — Benchmarking, Residuos, Wilcoxon y XAI
+> **Estado:** 📋 **PLANIFICADO**  
+> **Carpeta:** [`./BLOQUE_4/`](../BLOQUE_4/) | **Entregable Principal:** `04_diagnostico_xai.ipynb`
 
-Todos los análisis de esta fase operan sobre el vector consolidado de **$N = 24$ predicciones ciegas (*out-of-sample*) obtenidas vía LOOCV**, preservando su orden cronológico mensual (2023–2024).
+Opera sobre el vector de **$N = 24$ predicciones ciegas (*out-of-sample*) en orden cronológico exacto**:
 
-### 4.1. Benchmarking Multimétrico
-
-$$\text{MSE} = \frac{1}{N} \sum_{i=1}^{N} (y_i - \hat{y}_i)^2 \quad [(\%\text{Cu})^2], \qquad \text{RMSE} = \sqrt{\text{MSE}} \quad [\%\text{Cu}]$$
-
-$$\text{MAE} = \frac{1}{N} \sum_{i=1}^{N} |y_i - \hat{y}_i| \quad [\%\text{Cu}], \qquad \text{MAPE} = \frac{100\%}{N} \sum_{i=1}^{N} \left| \frac{y_i - \hat{y}_i}{y_i} \right| \quad [\%]$$
-
-$$\text{NRMSE} = \frac{\text{RMSE}}{\bar{y}} \times 100\% \quad [\%], \qquad R^2 = 1 - \frac{\sum_{i=1}^{N} (y_i - \hat{y}_i)^2}{\sum_{i=1}^{N} (y_i - \bar{y})^2}$$
-
-| Modelo Evaluado (LOOCV, $N = 24$) | $\text{MSE}$ ($(\%\text{Cu})^2$) | $\text{RMSE}$ ($\%\text{Cu}$) | $\text{MAE}$ ($\%\text{Cu}$) | $\text{MAPE}$ ($\%$) | $\text{NRMSE}$ ($\%$) | $R^2$ |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| 1. Línea Base Cancha (Histórico) | — | — | — | — | — | — |
-| 2. Regresión Lineal (OLS) | — | — | — | — | — | — |
-| 3. Ridge / Lasso / ElasticNet | — | — | — | — | — | — |
-| 4. SVR (Kernel RBF) | — | — | — | — | — | — |
-| 5. RNA Referencia (Dr. Delgado) | — | — | — | — | — | — |
-| 6. RNA Propia Optimizada (MLP + $L_2$) | — | — | — | — | — | — |
-
-### 4.2. Diagnóstico Riguroso de Residuos ($e_i = y_i - \hat{y}_i$, $N = 24$)
-1. **Eliminación de Sesgo Sistemático:** Verificar que la media de los residuos $\bar{e} \approx 0$ (frente al sesgo negativo/sobreestimación sistemática de la ley de cancha).
-2. **Normalidad de Errores:** Test de **Shapiro-Wilk** y gráfico Q-Q sobre los $24$ residuos *out-of-sample*.
-3. **Homocedasticidad:** Gráfico de residuos versus valores ajustados ($\hat{y}_i$) y test de **Breusch-Pagan** (regresando $e_i^2$ contra $\hat{y}_i$, interpretado en conjunto con la inspección visual dada la potencia moderada en $N = 24$).
-4. **Independencia Temporal (Durbin-Watson):** Al conservar los $24$ residuos ordenados mes a mes, se evalúa válidamente el estadístico:
-   $$d = \frac{\sum_{t=2}^{N} (e_t - e_{t-1})^2}{\sum_{t=1}^{N} e_t^2}$$
-   verificando ausencia de autocorrelación serial ($d \approx 2$).
-
-### 4.3. Prueba de Significancia Estadística Pareada ($N = 24$)
-Para demostrar que la reducción de error de la RNA respecto a la cancha (y frente a OLS) no es producto del azar:
-* Se definen las diferencias pareadas de error cuadrático (y absoluto):
-  $$D_i = (y_i - \text{CuT}_{\text{cancha}, i})^2 - (y_i - \hat{y}_{\text{RNA}, i})^2, \quad i = 1, \dots, 24$$
-* **Hipótesis Nula ($H_0$):** La mediana de $D_i$ es menor o igual a cero ($\text{RNA}$ no reduce el error).
-* **Hipótesis Alternativa ($H_1$):** La mediana de $D_i$ es estrictamente mayor que cero ($\text{RNA}$ reduce significativamente el error).
-* **Contraste:** Test no paramétrico de rangos con signo de **Wilcoxon** (unilateral, $\alpha = 0.05$), complementado con intervalo de confianza *bootstrap* ($B = 10{,}000$) para la reducción porcentual del $\text{MSE}$.
-
-### 4.4. Explicabilidad del Modelo (*Explainable AI* — XAI)
-Al contar con exactamente $2$ variables de entrada y $1$ salida, se despliegan tres niveles de interpretabilidad física sobre el modelo final reentrenado con los hiperparámetros óptimos:
-1. **Superficie de Respuesta 2D (Mapa de Contorno):** Grilla densa $(\text{CuT}_{\text{cancha}}, \text{CuS}_{\text{cancha}})$ proyectando las curvas de nivel de $\widehat{\text{Canje\_CuT}}$ junto con los $24$ lotes históricos superpuestos. Visualiza de forma directa cómo la proporción de cobre soluble modula la corrección no lineal.
-2. **Valores SHAP Exactos (`shap.KernelExplainer`):** Cuantificación de la contribución marginal exacta (en $\%\text{Cu}$) de $\text{CuT}_{\text{cancha}}$ y $\text{CuS}_{\text{cancha}}$ en cada mes (*Summary Plot* y *Waterfall Plots*).
-3. **Importancia por Permutación (`permutation_importance`):** Incremento promedio en el $\text{MSE}$ al permutar repetidamente cada entrada, demostrando cuantitativamente el aporte predictivo de la segunda neurona ($\text{CuS}$).
+1. **Benchmarking Multimétrico Completo:**
+   * Comparativa de Cancha, OLS, Ridge, Lasso, ElasticNet, SVR, RNA Dr. Delgado y RNA Propia Optimizada sobre $\text{MSE}$, $\text{RMSE}$, $\text{MAE}$, $\text{MAPE}$, $\text{NRMSE}$ y $R^2$.
+2. **Diagnóstico Riguroso de Residuos ($e_i = y_i - \hat{y}_i$):**
+   * Eliminación de sesgo sistemático ($\bar{e} \approx 0$).
+   * Normalidad de errores (Shapiro-Wilk).
+   * Homocedasticidad (Breusch-Pagan).
+   * Independencia temporal (Durbin-Watson $d \approx 2$).
+3. **Prueba de Significancia Estadística Pareada:**
+   * Test no paramétrico de rangos con signo de **Wilcoxon** (unilateral, $\alpha = 0.05$) sobre las diferencias de error cuadrático $D_i = (y_i - \hat{y}_{\text{Cancha}, i})^2 - (y_i - \hat{y}_{\text{RNA}, i})^2$, certificando con $p < 0.05$ que la mejora de la red no es producto del azar.
+4. **Explicabilidad del Modelo (*Explainable AI* — XAI):**
+   * **Superficie de Respuesta 2D:** Mapa de contorno $(\text{CuT}, \text{CuS}) \to \widehat{\text{Canje}}$ con los $24$ puntos históricos.
+   * **Valores SHAP (`KernelExplainer`):** Contribución marginal en $\%\text{Cu}$ de cada variable por mes.
+   * **Importancia por Permutación (`permutation_importance`):** Aporte predictivo de la segunda neurona ($\text{CuS}$).
 
 ---
 
-## FASE 5: Modelo Económico Dual y Valorización Comercial ENAMI
+## 7. BLOQUE 5: Modelo Económico Dual y Valorización Comercial ENAMI
+> **Estado:** 📋 **PLANIFICADO**  
+> **Carpeta:** [`./BLOQUE_5/`](../BLOQUE_5/) | **Entregable Principal:** `05_modelo_economico_enami.ipynb`
 
-### 5.1. Marco Tarifario Oficial ENAMI para Minerales de Concentración / Sulfuros (2023–2024)
-Dado que Mantos Cobrizo presenta predominio de especies sulfuradas (bajo ratio $\text{CuS}/\text{CuT}$) y su liquidación objetivo depende de $\text{Canje\_CuT}$, se implementa la estructura oficial de las resoluciones mensuales de **Minerales de Concentración (Sulfuros)** ubicadas en `./MATERIAL_TESIS/Precio%20mx%20Enami%202023-2024`:
+Incorpora las $24$ circulares mensuales consolidadas de ENAMI para flotación de sulfuros y el tonelaje certificado de báscula puente (`Romana_Ton` = $295{,}884.67\text{ t}$):
 
-$$V_{\text{Lote}}\; (\text{USD}) = \text{TMS} \times \left[ \text{VPP} - \text{Maquila} - \text{Cargos} \right] - \text{Castigos}$$
-
-Donde:
-* **Toneladas Métricas Secas ($\text{TMS}$):**
-  $$\text{TMS} = \text{TMH} \times \left(1 - \frac{\%\text{Humedad}}{100}\right)$$
-* **Valor Producto Pagable ($\text{VPP}$):**
-  $$\text{VPP} = \text{Ley Pagable} \times P_{\text{LME}} \times 22.0462$$
-* **Ley Pagable:** Determinada por la escala de deducción metalúrgica y recuperación de flotación establecida en la circular mensual vigente de ENAMI para la ley de cobre total ($\text{CuT}$).
-* **Maquila y Cargos:** Cargo de tratamiento fijo por $\text{TMS}$ ($\text{USD/TMS}$) y cargos de flete interno (faena $\rightarrow$ Planta San José).
-* **Alcance de Penalizaciones:** Se consideran las cláusulas aplicables a sulfuros (humedad excedentaria y ley mínima pagable). *Nota metodológica:* Los castigos por consumo de ácido sulfúrico aplican exclusivamente a minerales oxidados de lixiviación ($\text{CuS}$) y no se mezclan con la tarifa de sulfuros, quedando documentados en el marco teórico y en las limitaciones de entrada del modelo.
-
-### 5.2. Evaluación Financiera en Dos Niveles Rigurosos
-Para evitar sobreestimar beneficios económicos, se distinguen rigurosamente el **error de proyección financiera** y el **ahorro real de caja**:
-
-#### Nivel 1: Reducción del Error de Valorización y Estabilidad de Flujo de Caja (USD)
-Para cada uno de los $24$ meses se valorizan $V_{\text{Cancha}}$ (proyección de terreno), $V_{\text{Real}}$ (liquidación efectiva ENAMI) y $V_{\text{RNA}}$ (liquidación anticipada por la red):
-$$\Delta \text{Desviación Presupuestaria (USD)} = \sum_{k=1}^{24} \left( |V_{\text{Cancha}, k} - V_{\text{Real}, k}| - |V_{\text{RNA}, k} - V_{\text{Real}, k}| \right)$$
-Este indicador cuantifica la **reducción de la brecha presupuestaria** y la disminución de la incertidumbre en la planificación del capital de trabajo (no corresponde a ingreso extra directo por sí mismo).
-
-#### Nivel 2: Ahorro Operacional Real / Pérdidas Evitadas mediante Simulación de Escenarios (USD)
-Se cuantifica el impacto efectivo en caja cuando la predicción de la RNA **modifica una decisión operativa antes del despacho** (supuestos operativos auditables):
-1. **Falsos Fletes y Maquilas Evitadas:** Identificación de escenarios/lotes donde $\text{CuT}_{\text{cancha}} \ge \text{Ley de Corte Económica}$ (bajo el método tradicional el lote se despacha), pero la ley real genera margen neto negativo tras descontar flete y maquila. Si la RNA anticipa $\hat{y}_{\text{RNA}} < \text{Ley de Corte}$, el lote se retiene o redirige a *blending*, evitando pérdida directa de caja.
-2. **Optimización de *Blending* (Mezcla Preventiva):** Simulación de mezclas en cancha para sostener la ley de despacho sobre la ley mínima comercial de ENAMI y evitar tramos de menor recuperación o penalización.
-3. **Ahorro en Contraanálisis de Laboratorio (Sobre 2):** Reducción del gasto en ensayes químicos externos cuando la liquidación de ENAMI se ubica dentro del intervalo de predicción esperado por la RNA.
+### 7.1. Estructura Financiera en Dos Niveles
+* **Nivel 1 — Reducción de Desviación Presupuestaria (USD):**
+  $$\Delta \text{Presupuesto (USD)} = \sum_{k=1}^{24} \left( |V_{\text{Cancha}, k} - V_{\text{Real}, k}| - |V_{\text{RNA}, k} - V_{\text{Real}, k}| \right)$$
+  Mide la reducción de volatilidad e incertidumbre en la planificación del capital de trabajo.
+* **Nivel 2 — Ahorro Operacional Real de Caja (USD):**
+  1. **Falsos Fletes y Maquilas Evitadas:** Detección de lotes con $\text{CuT}_{\text{cancha}} \ge \text{Ley de Corte}$, pero cuya ley real en planta genera margen negativo tras descontar flete y tratamiento. Si la RNA anticipa $\hat{y}_{\text{RNA}} < \text{Cut-off}$, el lote se retiene o mezcla, evitando pérdida efectiva.
+  2. **Optimización de *Blending* Preventivo:** Mezcla programada en acopio para sostener lotes sobre la ley mínima pagable de ENAMI.
+  3. **Ahorro en Ensayes de Laboratorio (Sobre 2):** Reducción de costos al evitar contraanálisis innecesarios cuando la liquidación de ENAMI se ubica dentro del intervalo de confianza de la RNA.
 
 ---
 
-## FASE 6: Adopción Tecnológica, Gestión Operativa y Protocolo ENAMI
+## 8. BLOQUE 6: Protocolo Operacional, Streamlit y Memoria Final
+> **Estado:** 📋 **PLANIFICADO**  
+> **Carpeta:** [`./BLOQUE_6/`](../BLOQUE_6/) | **Entregables:** `app.py`, SOP Operacional y Actualización `./INFORME_TESIS.docx`
 
-### 6.1. Integración Ligera en la Pequeña y Mediana Minería
-El modelo entrenado se serializa (`joblib` / `.keras`) junto con su escalador (`StandardScaler`), permitiendo ejecución en menos de un segundo en cualquier computador estándar de faena mediante Python/Streamlit, sin requerir infraestructura de alto costo ni licencias comerciales.
-
-### 6.2. Procedimiento Operativo Estándar (SOP) de Despacho y *Blending*
-
-```mermaid
-flowchart LR
-    classDef process fill:#EDE9FE,stroke:#7C3AED,stroke-width:2px,color:#4C1D95,font-size:12px;
-    classDef model fill:#E0E7FF,stroke:#4338CA,stroke-width:2px,color:#1E1B4B,font-size:12px,font-weight:bold;
-    classDef decision fill:#FEF3C7,stroke:#D97706,stroke-width:2px,color:#92400E,font-size:12px,font-weight:bold;
-    classDef action fill:#DCFCE7,stroke:#16A34A,stroke-width:2px,color:#14532D,font-size:12px,font-weight:bold;
-
-    P1(["Paso 1: Muestreo Sistematico en Cancha"]):::process
-    P2[/"Paso 2: Ensayes Quimicos (CuT, CuS)"/]:::process
-    P3[["Paso 3: Inferencia RNA + Intervalo Predictivo"]]:::model
-    P4{"Paso 4: Ley Predicha >= Ley de Corte Economica?"}:::decision
-    P5A["Paso 5A: Despacho Directo a ENAMI / PSJ"]:::action
-    P5B["Paso 5B: Retencion y Blending con Pila de Mayor Ley"]:::process
-
-    P1 --> P2 --> P3 --> P4
-    P4 -->|"Si: Margen Positivo"| P5A
-    P4 -->|"No: Riesgo de Falso Flete"| P5B
-    P5B -.->|"Remuestreo de Pila Homogeneizada"| P2
-```
-
-### 6.3. Soporte Racional al Protocolo Reglamentario de 3 Sobres de ENAMI
-Conforme al Reglamento de Compra de Minerales de ENAMI, el muestreo oficial genera tres paquetes sellados: **Sobre 1** (ENAMI), **Sobre 2** (Productor) y **Sobre 3** (Testigo / Dirimente en bóveda). La normativa establece que el Sobre 3 solo puede abrirse si existe una discrepancia superior a la tolerancia oficial entre los certificados químicos del **Sobre 1 y el Sobre 2**.
-
-El rol operativo de la RNA en esta etapa es actuar como **gatillador económico del Sobre 2**:
-* **Escenario A (Consistencia):** Si la ley reportada por ENAMI (Sobre 1) cae dentro del intervalo de predicción de la RNA ($\hat{y}_{\text{RNA}} \pm \text{margen operativo}$), el productor acepta la liquidación con respaldo cuantitativo y **ahorra el costo de laboratorio del Sobre 2**.
-* **Escenario B (Desviación Anómala):** Si el Sobre 1 resulta significativamente inferior a $\hat{y}_{\text{RNA}}$, se activa el envío del **Sobre 2** a un laboratorio externo certificado. Con ambos certificados químicos en mano, si $|\text{Sobre 1} - \text{Sobre 2}|$ excede la tolerancia reglamentaria de ENAMI, se procede formalmente a la apertura del **Sobre 3 (Arbitraje)**.
+1. **Procedimiento Operativo Estándar (SOP) y Protocolo de 3 Sobres ENAMI:**
+   * Protocolo para actuar como gatillador racional del **Sobre 2** (Productor) y habilitar la apertura del **Sobre 3 (Arbitraje)** ante desviaciones anómalas superiores a la tolerancia reglamentaria de ENAMI.
+2. **Prototipo Interactivo en Streamlit (`app.py`):**
+   * Módulo de inferencia en tiempo real con barra de incertidumbre ($\pm \text{RMSE}$).
+   * Semáforo operacional (Verde: Despacho directo; Amarillo: Blending; Rojo: Retener despacho).
+   * Simulador financiero dinámico con tarifas ENAMI.
+3. **Actualización Integral de la Memoria de Título (`./INFORME_TESIS.docx`):**
+   * Traslado exhaustivo de todos los resultados, tablas, diagnósticos y conclusiones a los Capítulos 1 al 6 de la tesis formal en Word.
 
 ---
 
-## FASE 7: Desarrollo de la Interfaz Gráfica de Usuario (Streamlit)
+## 9. Matriz de Correspondencia con los Capítulos de la Tesis (`./INFORME_TESIS.docx`)
 
-### 7.1. Arquitectura del Prototipo (`app.py`)
-El modelo ganador —entrenado finalmente sobre los $N = 24$ registros completos utilizando la arquitectura e hiperparámetros validados en LOOCV— se encapsula en un `Pipeline` serializado (`StandardScaler` + `MLP`) consumido por `app.py`:
-
-* **Barra Lateral (*Sidebar*):** Selección de faena (Mantos Cobrizo), carga del pipeline entrenado y parámetros tarifarios vigentes (precio cobre LME $\text{USD/lb}$, maquila, flete y ley de corte económica).
-* **Pestaña 1 — Predicción Operativa de Canje:** Ingreso de $\text{CuT}_{\text{cancha}}$ ($\%$) y $\text{CuS}_{\text{cancha}}$ ($\%$), despliegue de $\widehat{\text{Canje\_CuT}}$ con banda de incertidumbre basada en el $\text{RMSE}_{\text{LOOCV}}$, posición del lote sobre la **Superficie de Respuesta 2D** y descomposición SHAP de la predicción.
-* **Pestaña 2 — Simulador Financiero ENAMI:** Ingreso de $\text{TMH}$ y $\%\text{Humedad}$, cálculo de $\text{TMS}$, liquidación proyectada (Cancha vs. RNA), margen neto descontado flete/maquila y evaluación del umbral de alerta para contraanálisis (Sobre 2).
-* **Pestaña 3 — Semáforo Operativo de Decisión:**
-  * **Verde:** $\hat{y}_{\text{RNA}}$ supera cómodamente la ley de corte económica $\rightarrow$ Despacho directo.
-  * **Amarillo:** $\hat{y}_{\text{RNA}}$ dentro de la banda marginal ($\text{Cut-off} \pm \text{RMSE}$) $\rightarrow$ Evaluar *blending* preventivo.
-  * **Rojo:** $\hat{y}_{\text{RNA}} < \text{Cut-off}$ $\rightarrow$ Riesgo de falso flete; retener despacho.
+| Capítulo de la Memoria de Título | Bloques Metodológicos Asociados | Contenido Específico a Sincronizar |
+| :--- | :---: | :--- |
+| **Capítulo 1: Introducción** | Bloque 0 y Bloque 6 | Planteamiento de la brecha cancha-ENAMI, objetivos general y específicos, alcances con SOP/Streamlit y limitaciones muestrales ($N = 24$). |
+| **Capítulo 2: Marco Teórico** | Bloques 0, 1, 3 y 5 | Tarifas oficiales ENAMI Sulfuros, Teoría de Muestreo de Gy, Perceptrón Multicapa, regularización $L_1/L_2$ y métricas estadísticas. |
+| **Capítulo 3: Materiales y Métodos** | Bloques 0, 1, 2, 3 y 6 | Auditoría de datos ($N = 24$, leyes a 2 decimales, báscula puente), EDA, protocolo LOOCV sin fuga, grilla parsimoniosa RNA y arquitectura de `app.py`. |
+| **Capítulo 4: Resultados Obtenidos** | Bloques 4 y 5 | Tabla comparativa de *benchmarking*, residuos de regresión, prueba de Wilcoxon ($p < 0.05$), explicabilidad XAI (SHAP) y modelo económico dual en USD. |
+| **Capítulo 5: Discusión** | Bloques 1, 4, 5 y 6 | Interpretación geometalúrgica de atípicos y no linealidad, justificación de LOOCV por ruido blanco en ACF, protocolo de 3 sobres y sensibilidad tarifaria. |
+| **Capítulo 6: Conclusiones y Trabajo Futuro** | Todos los Bloques | Síntesis de cumplimiento de objetivos, cuantificación de reducción de pérdidas económicas y líneas de investigación futuras (*Transfer Learning* a Mina Tigresa). |
 
 ---
 
-## FASE 8: Plan de Ejecución por Bloques, Trazabilidad Académica y Alineación Documental
+## 10. Compromisos de Calidad y Estándar de Entrega por Bloque
 
-### 8.1. Hoja de Ruta Operativa Bloque por Bloque
-
-| Bloque | Entregable Técnico / Script | Criterio de Aprobación para Avanzar |
-| :---: | :--- | :--- |
-| **Bloque 0** | `00_auditoria_datos.ipynb` | Dataset limpio $N=24$ en $\%\text{Cu}$, fórmula MECM verificada y tabla tarifaria mensual ENAMI 2023–2024 lista. |
-| **Bloque 1** | `01_eda_caracteristicas.ipynb` | Tablas de descriptivos, Shapiro-Wilk, Mahalanobis, Pearson/Spearman, VIF con constante y gráfico Ratio Solubilidad vs. Sesgo. |
-| **Bloque 2** | `02_baselines_loocv.ipynb` | Función maestra LOOCV sin fuga de datos; métricas *out-of-sample* para Cancha, OLS, Ridge, Lasso, ElasticNet y SVR. |
-| **Bloque 3** | `03_modelado_rna_loocv.ipynb` | Comparativa de topologías `(2,)`, `(3,)`, `(4,)`, `(2,2)`, `(3,2)` + réplica modelo Dr. Delgado bajo LOOCV y validación temporal secundaria. |
-| **Bloque 4** | `04_diagnostico_xai.ipynb` | Residuos $N=24$ auditados (Shapiro, Breusch-Pagan, Durbin-Watson), Wilcoxon ($p$-valor), Mapa de Contorno 2D, SHAP y Permutación. |
-| **Bloque 5** | `05_modelo_economico_enami.ipynb` | Cuantificación dual: Nivel 1 (reducción error presupuestario) y Nivel 2 (ahorro real en caja por escenarios operativos). |
-| **Bloque 6** | `app.py` + Actualización `./INFORME_TESIS.docx` | Pipeline serializado funcionando en Streamlit y resultados integrados en Capítulos 3, 4, 5 y 6. |
-
-### 8.2. Matriz de Correspondencia con el Informe de Título (`./INFORME_TESIS.docx`)
-
-| Capítulo del Informe | Fases Asociadas | Contenido Principal |
-| :--- | :--- | :--- |
-| **Capítulo 1: Introducción** | Introducción & Fase 6 | Planteamiento del problema, objetivos, alcances actualizados (incluyendo SOP y prototipo Streamlit) y limitaciones. |
-| **Capítulo 2: Marco Teórico** | Fases 2, 3 y 5 | Comercialización y tarifas ENAMI (sulfuros vs. óxidos), Teoría de Muestreo de Gy, MLP, regularización $L_1/L_2$ y métricas. |
-| **Capítulo 3: Materiales y Métodos** | Bloque 0, Fases 1, 2, 3 y 7 | Auditoría de datos, EDA, protocolo LOOCV sin fuga de datos, grilla de arquitecturas RNA y arquitectura de `app.py`. |
-| **Capítulo 4: Resultados Obtenidos** | Fases 4 y 5 | Tabla de *benchmarking* multimétrico, diagnóstico de residuos, test de Wilcoxon, explicabilidad XAI y modelo económico dual. |
-| **Capítulo 5: Discusión** | Fases 4, 5 y 6 | Interpretación geometalúrgica de los residuos, validez frente a $N=24$, rol racional en Sobre 2 y sensibilidad económica. |
-| **Capítulo 6: Conclusiones** | Fase 8 | Síntesis de cumplimiento de objetivos, impacto técnico-económico demostrado y líneas de trabajo futuro. |
-
-### 8.3. Ajustes Pendientes de Consistencia Documental en `./INFORME_TESIS.docx`
-1. **Sincronizar Alcances:** Incorporar explícitamente en la sección *Alcances* del documento Word el desarrollo del Procedimiento Operativo Estándar (SOP) y el prototipo en Streamlit (`app.py`).
-2. **Estilo de Citación:** Confirmar con el Dr. José Delgado el estándar definitivo de referencias exigido por el Departamento de Ingeniería en Minas de la Universidad de Antofagasta (numeración entre corchetes `[1]` según plantilla vs. APA 7 autor-año).
-3. **Nomenclatura Uniforme:** Mantener de forma uniforme la denominación **Faena Mantos Cobrizo (Distrito Minero Los Cóndores)** en texto, tablas, gráficos y código.
-
-### 8.4. Limitaciones y Trabajo Futuro
-* **Limitaciones:** Especificidad geológica local (modelo calibrado a la mineralogía de Mantos Cobrizo), tamaño muestral discreto ($N = 24$ balances mensuales, mitigado mediante parsimonia, regularización $L_2$ y LOOCV) y exclusión directa de impurezas penalizables al restringirse estrictamente a dos entradas ($\text{CuT}$, $\text{CuS}$).
-* **Trabajo Futuro:** Ampliación multielemental (arsénico, antimonio, humedad, consumo de ácido en lotes oxidados), reentrenamiento continuo conforme ingresen nuevos cierres mensuales y evaluación de *Transfer Learning* hacia yacimientos análogos de la región (como los registros preliminares de Mina Tigresa).
+Para resguardar la máxima transparencia y reproducibilidad ante el profesor guía Dr. José Delgado Vega y la comisión evaluadora:
+1. **Autonomía Total por Carpeta:** Cada bloque (`BLOQUE_0/`, `BLOQUE_1/`, etc.) debe ser completamente autocontenido.
+2. **Pre-Renderizado de Cuadernos:** Todo cuaderno Jupyter (`.ipynb`) se entrega ejecutado de principio a fin sin errores, con gráficos, tablas y mensajes impresos en el propio archivo.
+3. **Formatos Duales de Datos:** Toda tabla cuantitativa se exporta simultáneamente en texto plano estructurado (`.csv`) y en formato corporativo formateado (`.xlsx`).
+4. **Calidad de Ilustración Científica:** Todas las figuras se generan con resolución de publicación (**200 DPI**) con paleta institucional y tipografía legible.
+5. **Control de Versiones Continuo:** Cada avance se documenta mediante commits atómicos y sincronización en GitHub.
