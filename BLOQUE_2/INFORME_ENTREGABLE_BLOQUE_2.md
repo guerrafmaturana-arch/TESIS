@@ -66,7 +66,7 @@ donde $Z_j(k) = (X_{k,j} - \mu_{j,-k}) / \sigma_{j,-k}$.
 #### 4. Regresión Ridge ($L_2$ — Tikhonov)
 Controla el condicionamiento numérico y el efecto apalancamiento minimizando la suma de errores cuadráticos más la penalización de norma euclidiana:
 $$\hat{\beta}^{\text{Ridge}} = \arg\min_{\beta} \left\{ \sum_{i \ne k} \left(y_i - \beta_0 - \sum_{j=1}^2 \beta_j Z_{i,j}\right)^2 + \alpha \sum_{j=1}^2 \beta_j^2 \right\}$$
-El hiperparámetro $\alpha \in \text{logspace}(-3, 3, 100)$ se selecciona mediante validación cruzada interna (GKB/LOOCV interno) dentro del pliegue de entrenamiento.
+El hiperparámetro $\alpha \in \text{logspace}(-3, 3, 100)$ se selecciona mediante validación cruzada interna (GCV/LOOCV interno) dentro del pliegue de entrenamiento.
 
 #### 5. Regresión Lasso ($L_1$ — Least Absolute Shrinkage and Selection Operator)
 Aplica contracción de coeficientes con capacidad intrínseca de selección de variables:
