@@ -31,7 +31,7 @@ El presente informe consolida los resultados y entregables técnicos del **Bloqu
 
 Para certificar la reproducibilidad técnica exigida por el Departamento de Ingeniería en Minas de la Universidad de Antofagasta:
 
-| Parámetro / Componente | Especificación Técnica Certificada en Faena |
+| Parámetro / Componente | Especificación Técnica del Entorno de Desarrollo |
 | :--- | :--- |
 | **Sistema Operativo** | Windows 11 Home Single Language (Build 10.0.26200-SP0) |
 | **Arquitectura de Procesamiento** | AMD64 (AMD Ryzen / Family 25 Model 80 Stepping 0) |
@@ -86,8 +86,12 @@ A partir del archivo maestro `Data Cobrizo.xlsx` (`Sheet1`), se extrajeron los $
   $$\max |\text{CuT}_{\text{cancha}} - (\text{CuS}_{\text{cancha}} + \text{CuIn}_{\text{cancha}})| = 0.01\%\text{Cu}$$
   $$\max |\text{Canje\_CuT} - (\text{Canje\_CuS} + \text{Canje\_CuIn})| = 0.20\%\text{Cu}$$
   *(Nota técnica: La variable objetivo de venta corresponde de manera unívoca al ensayo oficial liquidado `Canje_CuT` emitido por ENAMI).*
-* **Tonelaje Total Acopiado y Pesado:** $286{,}704\text{ toneladas}$ estimadas en acopio (`Cancha_Ton`) y **$295{,}884.67\text{ toneladas}$** certificadas en báscula puente (`Romana_Ton`, suma dinámica exacta del dataset auditado), insumo maestro para el Bloque 5.
-  > **Nota de Conciliación de Báscula Puente:** La sumatoria celda por celda de los 24 registros mensuales en la columna de báscula puente de `Data Cobrizo.xlsx` arroja exactamente **$295{,}884.67\text{ toneladas}$**. Conforme al principio de reproducibilidad y eliminación de transcripciones manuales rígidas estipulado en la Metodología v4.0, este tonelaje se calcula dinámicamente en código (`df['Romana_Ton'].sum()`), garantizando trazabilidad absoluta frente a estimaciones manuales preliminares ($295{,}960.67\text{ t}$ o $295{,}543.35\text{ t}$).
+* **Tonelaje Total Acopiado y Pesado:** $286{,}704\text{ toneladas}$ estimadas en acopio (`Cancha_Ton`) y **$295{,}884.67\text{ toneladas}$** certificadas en báscula puente (`Romana_Ton`, suma dinámica exacta del dataset auditado, promedio mensual de $12{,}328.53\text{ t/mes}$), insumo maestro para el Bloque 5.
+  > **Regla Operativa de Uso de Tonelajes en el Repositorio:**
+  > * **Bloques 1 al 4 (EDA, Modelado y Validación Predictiva):** **NO se utilizan tonelajes.** Todo el análisis exploratorio y los algoritmos predictivos operan estrictamente sobre el tensor de leyes minerales: Entradas ($X \in \mathbb{R}^{24 \times 2}$): `Cancha_CuT` y `Cancha_CuS`; Salida ($y \in \mathbb{R}^{24 \times 1}$): `Canje_CuT`.
+  > * **Bloque 5 (Evaluación Económica) y Defensa de Tesis:** **SÍ se utiliza `Romana_Ton` ($295{,}884.67\text{ t}$)**, dado que las tarifas comerciales de ENAMI se liquidan en $\text{US\$/tms}$. Además, este volumen demuestra formalmente ante la comisión evaluadora que los $N = 24$ registros corresponden a balances mensuales consolidados a escala industrial y no a muestras puntuales.
+  > 
+  > **Nota de Conciliación de Báscula Puente:** La sumatoria celda por celda de los 24 registros en la columna 12 de `Data Cobrizo.xlsx` arroja de manera unívoca y exacta **$295{,}884.67\text{ toneladas}$**. Conforme al principio de reproducibilidad, este valor se calcula dinámicamente en código (`df['Romana_Ton'].sum()`), eliminando transcripciones manuales rígidas.
 
 ---
 
@@ -152,7 +156,7 @@ $$\text{Valor Lote (USD)} = \text{TMS} \times \text{Tarifa Unitaria (US\$/tms)}$
 | **2024-11** | 432.693 | 950.89 | 146.491 | 73.659 | 5.504 | 63.758 |
 | **2024-12** | 411.625 | 977.32 | 140.631 | 71.733 | 2.734 | 62.255 |
 
-*(Nota de auditoría: Los valores del documento facsimilar `ABRIL 2023.pdf` quedan certificados para doble verificación visual antes de ejecutar la simulación económica del Bloque 5).*
+*(Nota de auditoría: Los valores del documento facsimilar `ABRIL 2023.pdf` (`Flot_Base_USD_tms = 141.290` y `Flot_Escala_USD_tms_1pct = 70.776`) quedan certificados para doble verificación visual antes de ejecutar la simulación económica del Bloque 5).*
 
 ---
 
