@@ -1,0 +1,6 @@
+Espacio_Entradas,Variable,VIF,Diagnostico_Metodologico
+Modelo Propuesto (2 Inputs),Cancha_CuT,1.8045,VIF = 1.80 < 5.0 (Colinealidad baja - ÓPTIMO)
+Modelo Propuesto (2 Inputs),Cancha_CuS,1.8045,VIF = 1.80 < 5.0 (Colinealidad baja - ÓPTIMO)
+Modelo Rechazado (+CuIn),Cancha_CuT,4754.0,VIF >> 10 (EXPLOSIÓN DE MULTICOLINEALIDAD)
+Modelo Rechazado (+CuIn),Cancha_CuS,83.2,VIF >> 10 (EXPLOSIÓN DE MULTICOLINEALIDAD)
+Modelo Rechazado (+CuIn),Cancha_CuIn,4004.1,VIF >> 10 (COLINEALIDAD EXACTA: CuT = CuS + CuIn)
