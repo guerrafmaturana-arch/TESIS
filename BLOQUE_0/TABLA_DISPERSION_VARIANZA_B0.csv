@@ -1,6 +1,0 @@
-Variable,Media (%Cu),Desv_Est_Muestral_s (%Cu),Varianza_Muestral_s2 ((%Cu)^2),Desv_Est_Poblacional_sigma (%Cu),Varianza_Poblacional_sigma2 ((%Cu)^2)
-Cancha_CuT,1.7717,0.2411,0.0581,0.236,0.0557
-Cancha_CuS,0.1471,0.0307,0.0009,0.0301,0.0009
-PSJ_CuT,1.4304,0.2496,0.0623,0.2443,0.0597
-Canje_CuT,1.4313,0.249,0.062,0.2438,0.0594
-Sesgo_Canje,0.3404,0.1411,0.0199,0.1382,0.0191
