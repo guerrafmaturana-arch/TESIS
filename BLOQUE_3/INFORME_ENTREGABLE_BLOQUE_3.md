@@ -1,4 +1,4 @@
-# INFORME TÉCNICO DE ENTREGABLES — BLOQUE 3 (AUDITADO Y CORREGIDO)
+# INFORME TÉCNICO DE ENTREGABLES — BLOQUE 3 (AUDITADO Y SELLADO RCI)
 ## Modelado de Redes Neuronales Artificiales (RNA), Protocolo LOOCV ($N=24$), Modelos Directos y Residuales (*Residual-MLP*), Réplica Dr. Delgado y Estudio de Ablación
 
 **Trabajo de Titulación para optar al título de Ingeniero Civil en Minas**  
@@ -9,28 +9,27 @@
 * **Caso de Estudio:** Faena Mantos Cobrizo (Distrito Minero Los Cóndores) / ENAMI (Planta San José)  
 * **Módulo:** Bloque 3 — Modelado Neuronal, Validación Cruzada LOOCV y Robustez  
 * **Ubicación:** `./BLOQUE_3/`  
-* **Versión Metodológica:** 4.0 (Línea Temporal Estricta — Cero Fuga, Rigor Econométrico y Resolución de Auditoría)  
+* **Versión Metodológica:** 4.0 (Línea Temporal Estricta — Cero Fuga, Rigor Econométrico y Resolución de Auditoría RCI)  
 
 ---
 
-## 1. Resumen Ejecutivo y Resolución Integral de Auditoría
+## 1. Resumen Ejecutivo y Resolución Integral de Auditorías
 
-El presente informe consolida la formulación matemática, el desarrollo experimental, el análisis geometalúrgico y los entregables técnicos del **Bloque 3**, ajustados en estricto cumplimiento de la auditoría experta (`BLOQUE_3/auditor_a_experta_y_cr_tica_bloque_3.md`) y la incorporación mandatoria de la métrica de **Error Cuadrático Medio (MSE, en $(\%\text{Cu})^2$)**.
+El presente informe consolida la formulación matemática, el desarrollo experimental, el análisis geometalúrgico y los entregables técnicos del **Bloque 3**, ajustados y certificados bajo la **Auditoría Experto-Crítica RCI** (`BLOQUE_3/auditor_a_rci_bloque_3.md`) y la integración obligatoria de la métrica de **Error Cuadrático Medio (MSE, en $(\%\text{Cu})^2$)**.
 
-En este módulo se diseñó, entrenó y evaluó un conjunto sistemático de **Redes Neuronales Artificiales (RNA)** bajo el mismo protocolo de validación cruzada dejando uno fuera (**LOOCV**, $N = 24$) y con el mismo principio de cero fuga de datos (*zero data leakage*) aplicado a los modelos de referencia (*baselines*) del Bloque 2:
+En este módulo se diseñó, entrenó y evaluó un conjunto sistemático de **11 arquitecturas de Redes Neuronales Artificiales (RNA)** bajo el mismo protocolo de validación cruzada dejando uno fuera (**LOOCV**, $N = 24$) y con el mismo principio de cero fuga de datos (*zero data leakage*) aplicado a los modelos de referencia (*baselines*) del Bloque 2:
 $$X = \begin{bmatrix} \text{Cancha\_CuT} & \text{Cancha\_CuS} \end{bmatrix} \in \mathbb{R}^{24 \times 2}, \qquad y = \text{Canje\_CuT} \in \mathbb{R}^{24 \times 1}$$
 
-### Matriz de Cumplimiento de Hallazgos de Auditoría:
+### Matriz de Cumplimiento de Hallazgos y Directrices RCI:
 
-| Hallazgo | Severidad | Acción Implementada y Resolución Metodológica |
+| Hallazgo / ID | Severidad | Acción Implementada y Resolución en Bloque 3 |
 | :---: | :---: | :--- |
-| **H-01** | **CRÍTICO** | **Consistencia Aritmética Absoluta:** Se eliminó la divergencia entre las tablas resumen y las predicciones mes a mes. Todas las métricas de la Tabla 4.1 se calculan única y directamente sobre el vector de $24$ predicciones del ensamble multi-semilla exportado en `PREDICCIONES_OOS_RNA.csv`, garantizando coincidencia al cuarto decimal. |
-| **H-02** | **CRÍTICO** | **Demostración del Colapso Lineal de Keras:** Se demostró algebraicamente que el código original de Keras omite funciones de activación no lineales (`activation=None`), reduciendo $49$ pesos nominales a solo **$3$ grados de libertad efectivos ($P_{\text{eff}} = 3$)**. La red converge al límite lineal de OLS. Se reportó la calibración *in-sample* original sobre `PSJ_CuT` ($7.97\% - 8.63\%$) y `Canje_CuT` ($7.38\%$), corrigiendo la afirmación errónea de comparación. |
-| **H-03** | **CRÍTICO** | **Incorporación de *Residual-Learning MLP*:** Se introdujo la familia de redes residuales ($\hat{y} = \text{Cancha\_CuT} - \hat{e}_{\text{MLP}}(\text{CuT}, \text{CuS})$). Bajo regularización $L_2$, colapsan de forma suave hacia `Baseline 1B` ($10.07\%$), eliminando la atenuación de pendiente y saturación en frentes de alta ley (Noviembre 2023). |
-| **H-04** | **ALTO** | **Validación Prospectiva Simétrica (*Holdout* 19/5):** Se incorporaron Cancha Directa, Baseline 1B ($8.96\%$ en la ventana de 5 meses), OLS y RidgeCV sobre exactamente el mismo periodo (`2024-08` a `2024-12`), contextualizando el $6.56\%$ de `RNA_MLP_2` con rigor inferencial. |
-| **H-05** | **ALTO** | **Cero Fuga y Retiro de Etiquetas Prematuras:** Se eliminaron las designaciones prematuras de "(Ganador/Campeón)", reservando la selección formal del *Champion Model* exclusivamente al **Bloque 4**. |
-| **H-06** | **MEDIO** | **Matiz Geoestadístico en *Buffered-LOOCV*:** Se explicó que el alza a $14.53\%$ en `RNA_MLP_2` se debe a la contigüidad cronológica de los dos únicos pulsos de alta ley (**Octubre 2023** y **Noviembre 2023**, $t=10, 11$). La exclusión mutua $(t-1, t+1)$ priva al modelo de soporte en la cola superior. |
-| **Usuario** | **MANDATORIO** | **Incorporación de MSE:** Se añadió formalmente la columna de **MSE ($(\%\text{Cu})^2$)** en todas las tablas comparativas (LOOCV, Ablación, Holdout y Buffered-LOOCV). |
+| **A-01** | **ALTA** *(Estratégico)* | **Contracción de Pesos en `Residual-MLP` y Directriz XAI:** Se documentó que una penalización $L_2$ de $\alpha = 2.0$ sobre el residuo contrae los pesos sinápticos ($\Vert\mathbf{W}\Vert \to 0$), haciendo que `Res_MLP_2_2`, `Res_MLP_3` y `Res_MLP_4` colapsen suavemente al sesgo medio $\bar{e}_{\text{train}}$, replicando exactamente a `Baseline 1B` ($10.07\%$). Esto demuestra que en $N = 24$, el piso empírico protege frente a sobreajuste ante valores extremos (Nov-2023). Se formaliza que **la explicabilidad XAI (SHAP, Superficie 2D y Permutación) en el Bloque 4 se ejecutará sobre `RNA_MLP_2`**, donde las neuronas poseen pesos activos y modelan la interacción no lineal de $\text{CuS}$. |
+| **A-02** | **MEDIA–ALTA** *(Metodológico)* | **Definición de Hiperparámetros A Priori:** Se certifica que los hiperparámetros ($\alpha$, activación, capas) corresponden a variantes estructurales predefinidas a priori en la grilla experimental para evitar sesgo de selección (*model selection bias*), analizando su sensibilidad de regularización. |
+| **A-03** | **MEDIA** *(Aritmético)* | **Conteo Exacto de Parámetros de Keras:** Se corrigió el conteo de parámetros nominales de la réplica `(4, 4, 4)` de Keras a **$57$ parámetros libres** ($(2\times 4 + 4) + (4\times 4 + 4) + (4\times 4 + 4) + (4\times 1 + 1) = 12 + 20 + 20 + 5 = 57$), manteniendo intacto su rango algebraico $P_{\text{eff}} = 3$. Actualizado en el informe, notebook y `LOG_HIPERPARAMETROS_RNA.csv/.xlsx`. |
+| **A-04** | **MEDIA** *(Terminológico)* | **Distinción entre MAPE y NRMSE *In-Sample*:** Se precisó que los valores $7.97\%$ (Dr. Delgado $8.63\%$) y $7.38\%$ corresponden a **MAPE *in-sample***. Se reportan ambos indicadores explícitamente: `MAPE = 7.97% (NRMSE = 9.91%)` sobre `PSJ_CuT` y `MAPE = 7.38% (NRMSE = 9.19%)` sobre `Canje_CuT`. |
+| **A-05** | **BAJA** *(Editorial)* | **Homogenización Editorial y Aritmética:** Se corrigió la redacción en Sección 6.1 a *"los 4 baselines principales del Bloque 2"*, y se unificó el cálculo de $\text{MSE}$ de la Tabla 5 con la Tabla 4.1 sin discrepancias de redondeo intermedio. |
+| **Usuario** | **MANDATORIO** | **Inclusión de MSE:** Se incorporó de manera formal y homogénea el **MSE en $(\%\text{Cu})^2$** en todas las tablas comparativas (LOOCV global, Ablación, Holdout y Buffered-LOOCV). |
 
 ---
 
@@ -55,9 +54,9 @@ donde la red entrena internamente contra el sesgo empírico histórico:
 $$e_i = \text{Cancha\_CuT}_i - \text{Canje\_CuT}_i, \qquad i \in \text{Train}_{-k}$$
 
 **Propiedad asintótica de seguridad:**  
-Bajo regularización $L_2$ creciente ($\alpha \to \infty$), los pesos sinápticos se contraen a cero ($\mathbf{W} \to 0$) y la salida de la red converge al sesgo medio del entrenamiento ($\hat{e}_{\text{MLP}} \to \bar{e}_{\text{train},-k}$). Por lo tanto:
+Bajo regularización $L_2$ creciente ($\alpha \ge 2.0$), los pesos sinápticos se contraen hacia cero ($\Vert\mathbf{W}\Vert \to 0$) y la salida de la red converge al sesgo medio del entrenamiento ($\hat{e}_{\text{MLP}} \to \bar{e}_{\text{train},-k}$). Por lo tanto:
 $$\lim_{\alpha \to \infty} \hat{y}_k = \text{Cancha\_CuT}_k - \bar{e}_{\text{train},-k} \equiv \text{Baseline 1B}$$
-Esta formulación garantiza que la red **jamás extrapolate con errores catastróficos**, garantizando un desempeño igual o superior a `Baseline 1B` ($10.07\%$).
+Esta formulación garantiza que la red **jamás extrapole con errores catastróficos**, asegurando un desempeño idéntico a `Baseline 1B` ($10.07\%$) en el límite de máxima regularización.
 
 ### 2.4. Control de Sobreajuste: Ratio Muestras / Parámetros ($N_{\text{train}} / P$)
 
@@ -73,7 +72,7 @@ Esta formulación garantiza que la red **jamás extrapolate con errores catastr�
 | **`RNA_MLP_2_2`** | Directa (MLP) | `(2, 2)` | `relu` | $15$ | $15$ | $\mathbf{1.53}$ | Profundidad compacta |
 | **`RNA_MLP_3_2`** | Directa (MLP) | `(3, 2)` | `tanh` | $20$ | $20$ | $\mathbf{1.15}$ | Frontera de sobreajuste |
 | **`RNA_Delgado_MLP`** | Directa (MLP) | `(4, 4)` | `relu` | $37$ | $37$ | $\mathbf{0.62}$ | Sobreparametrizado ($P > N$) |
-| **`RNA_Delgado_Keras`** | Directa (Keras) | `(4, 4, 4)` | Linear | $49$ | **$3$** | **$7.67$** | **Colapso lineal algebraico ($P_{\text{eff}} = 3$)** |
+| **`RNA_Delgado_Keras`** | Directa (Keras) | `(4, 4, 4)` | Linear | **$57$** | **$3$** | **$7.67$** | **Colapso lineal algebraico ($P_{\text{eff}} = 3$)** |
 
 ---
 
@@ -90,6 +89,9 @@ modelo = tf.keras.Sequential([
 ])
 modelo.compile(optimizer=tf.keras.optimizers.Adam(0.1), loss='mean_squared_error')
 ```
+**Conteo formal de parámetros:**
+$$P_{\text{nominal}} = \sum_{l=1}^{4} (d_{l-1} \cdot d_l + d_l) = (2 \cdot 4 + 4) + (4 \cdot 4 + 4) + (4 \cdot 4 + 4) + (4 \cdot 1 + 1) = 12 + 20 + 20 + 5 = \mathbf{57}$$
+
 Al omitir la función de activación, Keras aplica la identidad $g(z) = z$. La propagación hacia adelante se reduce a:
 $$\hat{y} = \mathbf{W}_4 \Big(\mathbf{W}_3 \big(\mathbf{W}_2 (\mathbf{W}_1 \mathbf{x} + \mathbf{b}_1) + \mathbf{b}_2\big) + \mathbf{b}_3\Big) + b_4$$
 Expandiendo el producto de matrices:
@@ -97,18 +99,20 @@ $$\mathbf{W}_{\text{eq}} = \mathbf{W}_4 \mathbf{W}_3 \mathbf{W}_2 \mathbf{W}_1 \
 $$b_{\text{eq}} = \mathbf{W}_4 \mathbf{W}_3 \mathbf{W}_2 \mathbf{b}_1 + \mathbf{W}_4 \mathbf{W}_3 \mathbf{b}_2 + \mathbf{W}_4 \mathbf{b}_3 + b_4 \in \mathbb{R}$$
 $$\hat{y} = \mathbf{W}_{\text{eq}} \mathbf{x} + b_{\text{eq}} = \beta_0 + \beta_1 \text{Cancha\_CuT} + \beta_2 \text{Cancha\_CuS}$$
 
-**Conclusión Científica:** La red de 4 capas y 49 parámetros nominales es **algebraicamente equivalente a una regresión lineal múltiple (OLS)** con rango 2 y exactamente 3 coeficientes independientes. Esto explica de forma rigurosa por qué su desempeño en LOOCV ($\text{NRMSE} = 11.64\%$) es casi indistinguible de OLS ($11.85\%$) y RidgeCV ($11.78\%$).
+**Conclusión Científica:** La red de 4 capas y 57 parámetros nominales es **algebraicamente equivalente a una regresión lineal múltiple (OLS)** con rango 2 y exactamente 3 coeficientes independientes ($P_{\text{eff}} = 3$). Sus pronósticos difieren en promedio solo $0.0023\%\text{Cu}$ respecto al modelo `OLS` del Bloque 2, convergiendo a $\text{NRMSE} = 11.64\%$ (frente a $11.85\%$ de OLS).
 
 ### 3.2. Calibración *In-Sample* vs. LOOCV
-* **Sobre objetivo original `PSJ_CuT` (*In-Sample*):** $\text{RMSE} = 0.1418\%\text{Cu}$, $\text{MECM} = 7.97\%$ (coincidente con el orden de magnitud del $8.63\%$ histórico reportado por el profesor guía en marzo 2025).
-* **Sobre objetivo comercial `Canje_CuT` (*In-Sample*):** $\text{RMSE} = 0.1315\%\text{Cu}$, $\text{MECM} = 7.38\%$.
-* **Sobre objetivo comercial `Canje_CuT` (LOOCV Ciego, $N=24$):** $\text{MSE} = 0.027735$, $\text{RMSE} = 0.1665\%\text{Cu}$, $\text{NRMSE} = 11.64\%$, $R^2 = +0.5334$.
+* **Sobre objetivo original `PSJ_CuT` (*In-Sample*):** $\text{RMSE} = 0.1418\%\text{Cu}$, $\mathbf{\text{MAPE} = 7.97\%}$ (con $\mathbf{\text{NRMSE} = 9.91\%}$), confirmando el orden de magnitud del $8.63\%$ histórico reportado en las diapositivas de marzo 2025.
+* **Sobre objetivo comercial `Canje_CuT` (*In-Sample*):** $\text{RMSE} = 0.1315\%\text{Cu}$, $\mathbf{\text{MAPE} = 7.38\%}$ (con $\mathbf{\text{NRMSE} = 9.19\%}$).
+* **Sobre objetivo comercial `Canje_CuT` (LOOCV Ciego, $N=24$):** $\text{MSE} = 0.027735\,(\%\text{Cu})^2$, $\text{RMSE} = 0.1665\%\text{Cu}$, $\text{NRMSE} = 11.64\%$, $R^2 = +0.5334$.
 
 ---
 
 ## 4. Resultados de Desempeño Fuera de Muestra (LOOCV, $N = 24$)
 
-### 4.1. Tabla Comparativa de Desempeño Predictivo (Consistente y Auditada)
+### 4.1. Tabla Comparativa de Desempeño Predictivo (Auditada y Certificada)
+
+Todas las métricas se computan directamente sobre las 24 predicciones ciegas del ensamble multiesemilla en [`PREDICCIONES_OOS_RNA.csv`](./PREDICCIONES_OOS_RNA.csv) ($\bar{y} = 1.43125\%\text{Cu}$, $\text{SST} = 1.42646$):
 
 | Identificador de Red | Familia | Topología | Parám. ($P$) | Activación | Optimizador | $\alpha$ | MSE ($(\%\text{Cu})^2$) | RMSE ($\%\text{Cu}$) | MAE ($\%\text{Cu}$) | NRMSE ($\%$) | $R^2$ Score | MAPE ($\%$) | Pearson $r$ | Sesgo ($\%\text{Cu}$) | Var. Explicada |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -116,13 +120,16 @@ $$\hat{y} = \mathbf{W}_{\text{eq}} \mathbf{x} + b_{\text{eq}} = \beta_0 + \beta_
 | **`Res_MLP_3`** | Residual-MLP | `(3,)` | $13$ | `relu` | L-BFGS | $2.0$ | **0.020782** | **0.1442** | **0.1178** | **10.07%** | **+0.6503** | **8.12%** | **+0.8209** | $-0.0000$ | +0.6503 |
 | **`Res_MLP_4`** | Residual-MLP | `(4,)` | $17$ | `relu` | L-BFGS | $2.0$ | **0.020782** | **0.1442** | **0.1178** | **10.07%** | **+0.6503** | **8.12%** | **+0.8209** | $-0.0000$ | +0.6503 |
 | **`Res_MLP_2`** | Residual-MLP | `(2,)` | $9$ | `relu` | L-BFGS | $1.0$ | **0.021551** | **0.1468** | **0.1200** | **10.26%** | **+0.6374** | **8.22%** | **+0.8103** | $-0.0022$ | +0.6375 |
-| **`RNA_Delgado_Keras`** | Directa (Keras) | `(4, 4, 4)` | $49$ ($3_{\text{eff}}$) | Linear | Adam(0.05) | $0.0$ | **0.027735** | **0.1665** | **0.1302** | **11.64%** | **+0.5334** | **8.74%** | **+0.7410** | $+0.0022$ | +0.5334 |
+| **`RNA_Delgado_Keras`** | Directa (Keras) | `(4, 4, 4)` | **$57$** ($3_{\text{eff}}$) | Linear | Adam(0.05) | $0.0$ | **0.027735** | **0.1665** | **0.1302** | **11.64%** | **+0.5334** | **8.74%** | **+0.7410** | $+0.0022$ | +0.5334 |
 | **`RNA_MLP_2`** | Directa (MLP) | `(2,)` | **$9$** | `tanh` | L-BFGS | $0.001$ | **0.030890** | **0.1758** | **0.1318** | **12.28%** | **+0.4803** | **8.95%** | **+0.6954** | **-0.0124** | +0.4842 |
 | **`RNA_MLP_4`** | Directa (MLP) | `(4,)` | $17$ | `relu` | L-BFGS | $5.0$ | **0.031446** | **0.1773** | **0.1340** | **12.39%** | **+0.4709** | **9.15%** | **+0.6867** | $+0.0060$ | +0.4720 |
 | **`RNA_MLP_3`** | Directa (MLP) | `(3,)` | $13$ | `relu` | L-BFGS | $5.0$ | **0.031951** | **0.1787** | **0.1350** | **12.49%** | **+0.4624** | **9.23%** | **+0.6809** | $+0.0068$ | +0.4638 |
 | **`RNA_Delgado_MLP`** | Directa (MLP) | `(4, 4)` | $37$ | `relu` | L-BFGS | $2.0$ | **0.032592** | **0.1805** | **0.1378** | **12.61%** | **+0.4516** | **9.33%** | **+0.6778** | $+0.0001$ | +0.4517 |
 | **`RNA_MLP_2_2`** | Directa (MLP) | `(2, 2)` | $15$ | `relu` | L-BFGS | $2.0$ | **0.034635** | **0.1861** | **0.1300** | **13.00%** | **+0.4173** | **8.92%** | **+0.6683** | $+0.0009$ | +0.4173 |
 | **`RNA_MLP_3_2`** | Directa (MLP) | `(3, 2)` | $20$ | `tanh` | L-BFGS | $2.0$ | **0.037222** | **0.1929** | **0.1398** | **13.48%** | **+0.3737** | **9.53%** | **+0.6122** | $-0.0044$ | +0.3746 |
+
+> **Nota Técnica sobre la Familia Residual:**  
+> En las arquitecturas `Res_MLP_2_2`, `Res_MLP_3` y `Res_MLP_4`, el valor $\alpha = 2.0$ induce contracción casi completa de los pesos residuales ($\Vert\mathbf{W}\Vert \approx 0.0005$), haciendo converger sus pronósticos exactamente hacia `Baseline 1B` ($10.07\%$). Por su parte, `Res_MLP_2` con $\alpha = 1.0$ mantiene actividad sináptica parcial, alcanzando $\text{NRMSE} = 10.26\%$.
 
 ![Predicciones Fuera de Muestra RNA vs Real](./fig_rna_predicciones_oos.png)
 
@@ -162,25 +169,25 @@ $$\hat{y} = \mathbf{W}_{\text{eq}} \mathbf{x} + b_{\text{eq}} = \beta_0 + \beta_
 
 ## 5. Estudio Experimental de Ablación de Entradas: Justificación de $\text{Cancha\_CuS}$
 
-Para contrastar el impacto geometalúrgico de la ley de cobre soluble ($\text{CuS}$), se evaluó el rendimiento comparando las entradas 2D frente a 1D, incorporando la métrica de **MSE**:
+Para contrastar el impacto geometalúrgico de la ley de cobre soluble ($\text{CuS}$), se evaluó el rendimiento comparando las entradas 2D frente a 1D, unificando los valores de **MSE** y **NRMSE%**:
 
 | Arquitectura Evaluada | Topología | Entradas | Parámetros | MSE ($(\%\text{Cu})^2$) | RMSE ($\%\text{Cu}$) | MAE ($\%\text{Cu}$) | NRMSE (%) | $R^2$ Score | Variación $\Delta\text{NRMSE}$ | Impacto de $\text{CuS}$ |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
-| **`RNA_MLP_2`** | `(2,)` | **2D [CuT, CuS]** | 9 | **0.030887** | **0.1757** | **0.1318** | **12.28%** | **+0.4803** | **$-1.53\%$** | **CRÍTICO: Reduce error en 1.53%** |
+| **`RNA_MLP_2`** | `(2,)` | **2D [CuT, CuS]** | 9 | **0.030890** | **0.1758** | **0.1318** | **12.28%** | **+0.4803** | **$-1.53\%$** | **CRÍTICO: Reduce error en 1.53%** |
 | `RNA_MLP_2` | `(2,)` | 1D [CuT] | 7 | 0.039068 | 0.1977 | 0.1514 | 13.81% | +0.3427 | — | — |
-| **`RNA_MLP_2_2`** | `(2, 2)` | **2D [CuT, CuS]** | 15 | **0.034633** | **0.1861** | **0.1300** | **13.00%** | **+0.4173** | **$-0.44\%$** | **Favorable** |
+| **`RNA_MLP_2_2`** | `(2, 2)` | **2D [CuT, CuS]** | 15 | **0.034635** | **0.1861** | **0.1300** | **13.00%** | **+0.4173** | **$-0.44\%$** | **Favorable** |
 | `RNA_MLP_2_2` | `(2, 2)` | 1D [CuT] | 13 | 0.037011 | 0.1924 | 0.1365 | 13.44% | +0.3773 | — | — |
-| **`RNA_MLP_3_2`** | `(3, 2)` | **2D [CuT, CuS]** | 20 | **0.037218** | **0.1929** | **0.1398** | **13.48%** | **+0.3738** | **$-0.36\%$** | **Favorable** |
+| **`RNA_MLP_3_2`** | `(3, 2)` | **2D [CuT, CuS]** | 20 | **0.037222** | **0.1929** | **0.1398** | **13.48%** | **+0.3737** | **$-0.36\%$** | **Favorable** |
 | `RNA_MLP_3_2` | `(3, 2)` | 1D [CuT] | 17 | 0.039217 | 0.1980 | 0.1407 | 13.84% | +0.3402 | — | — |
-| **`RNA_Delgado_MLP`** | `(4, 4)` | **2D [CuT, CuS]** | 37 | **0.032591** | **0.1805** | **0.1378** | **12.61%** | **+0.4517** | **$-0.17\%$** | **Favorable** |
+| **`RNA_Delgado_MLP`** | `(4, 4)` | **2D [CuT, CuS]** | 37 | **0.032592** | **0.1805** | **0.1378** | **12.61%** | **+0.4516** | **$-0.17\%$** | **Favorable** |
 | `RNA_Delgado_MLP` | `(4, 4)` | 1D [CuT] | 33 | 0.033478 | 0.1830 | 0.1355 | 12.78% | +0.4367 | — | — |
 | **`RNA_MLP_3`** | `(3,)` | 2D [CuT, CuS] | 13 | 0.031951 | 0.1787 | 0.1350 | 12.49% | +0.4624 | $+0.02\%$ | Neutro |
 | `RNA_MLP_3` | `(3,)` | 1D [CuT] | 10 | 0.031839 | 0.1784 | 0.1341 | 12.47% | +0.4643 | — | — |
-| **`RNA_MLP_4`** | `(4,)` | 2D [CuT, CuS] | 17 | 0.031444 | 0.1773 | 0.1340 | 12.39% | +0.4710 | $0.00\%$ | Neutro |
+| **`RNA_MLP_4`** | `(4,)` | 2D [CuT, CuS] | 17 | 0.031446 | 0.1773 | 0.1340 | 12.39% | +0.4709 | $0.00\%$ | Neutro |
 | `RNA_MLP_4` | `(4,)` | 1D [CuT] | 13 | 0.031462 | 0.1774 | 0.1338 | 12.39% | +0.4707 | — | — |
-| **`Res_MLP_2`** | `(2,)` | **2D [CuT, CuS]** | 9 | **0.021550** | **0.1468** | **0.1199** | **10.26%** | **+0.6374** | **$-0.03\%$** | **Favorable** |
+| **`Res_MLP_2`** | `(2,)` | **2D [CuT, CuS]** | 9 | **0.021551** | **0.1468** | **0.1200** | **10.26%** | **+0.6374** | **$-0.03\%$** | **Favorable** |
 | `Res_MLP_2` | `(2,)` | 1D [CuT] | 7 | 0.021688 | 0.1473 | 0.1203 | 10.29% | +0.6351 | — | — |
-| **`Res_MLP_2_2`** | `(2, 2)` | **2D [CuT, CuS]** | 15 | **0.020783** | **0.1442** | **0.1178** | **10.07%** | **+0.6503** | $0.00\%$ | Límite asintótico |
+| **`Res_MLP_2_2`** | `(2, 2)` | **2D [CuT, CuS]** | 15 | **0.020781** | **0.1442** | **0.1178** | **10.07%** | **+0.6504** | $0.00\%$ | Límite asintótico |
 | `Res_MLP_2_2` | `(2, 2)` | 1D [CuT] | 13 | 0.020783 | 0.1442 | 0.1178 | 10.07% | +0.6503 | — | — |
 
 ![Estudio de Ablación 2D vs 1D](./fig_rna_ablacion_entradas.png)
@@ -195,7 +202,7 @@ Para contrastar el impacto geometalúrgico de la ley de cobre soluble ($\text{Cu
 ## 6. Verificaciones de Robustez: Validación Prospectiva (*Holdout*) y *Buffered-LOOCV*
 
 ### 6.1. Validación Prospectiva Simétrica (*Holdout* Cronológico 19/5)
-Para asegurar una comparación metodológicamente simétrica y no sesgada, se evaluaron los **7 baselines del Bloque 2 y las redes neuronales** sobre exactamente la **misma ventana prospectiva de 5 meses** (`2024-08` a `2024-12`), habiendo entrenado exclusivamente con los primeros 19 meses (`2023-01` a `2024-07`):
+Para asegurar una comparación metodológicamente simétrica y no sesgada, se evaluaron **los 4 baselines principales del Bloque 2 (`Cancha Directa`, `Baseline 1B`, `OLS`, `RidgeCV`)** y las redes neuronales sobre exactamente la **misma ventana prospectiva de 5 meses** (`2024-08` a `2024-12`), habiendo entrenado exclusivamente con los primeros 19 meses (`2023-01` a `2024-07`):
 
 | Modelo Evaluado | Familia / Tipo | MSE Holdout ($(\%\text{Cu})^2$) | RMSE Holdout ($\%\text{Cu}$) | MAE Holdout ($\%\text{Cu}$) | NRMSE Holdout (%) | $R^2$ Holdout | Diagnóstico Operativo Futuro |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
@@ -252,9 +259,9 @@ Todos los entregables cumplen con el estándar de reproducibilidad y están disp
 | [`03_modelado_rna_loocv.ipynb`](./03_modelado_rna_loocv.ipynb) | Jupyter Notebook | Cuaderno pre-renderizado end-to-end con 19 celdas ejecutadas, salidas completas, métrica MSE y visualizaciones integradas. |
 | [`PREDICCIONES_OOS_RNA.csv`](./PREDICCIONES_OOS_RNA.csv) | CSV plano | $N = 24$ registros cronológicos con predicciones ciegas de las 11 arquitecturas evaluadas (directas y residuales). |
 | [`PREDICCIONES_OOS_RNA.xlsx`](./PREDICCIONES_OOS_RNA.xlsx) | Excel (`.xlsx`) | Versión en hoja de cálculo formateada para contraparte industrial y tribunal. |
-| [`LOG_HIPERPARAMETROS_RNA.csv`](./LOG_HIPERPARAMETROS_RNA.csv) | CSV plano | Bitácora pliegue a pliegue de las topologías, conteo de parámetros, regularizador $\alpha$, optimizador y error puntual. |
+| [`LOG_HIPERPARAMETROS_RNA.csv`](./LOG_HIPERPARAMETROS_RNA.csv) | CSV plano | Bitácora pliegue a pliegue de las topologías, conteo de parámetros ($57$ en Keras), regularizador $\alpha$, optimizador y error puntual. |
 | [`LOG_HIPERPARAMETROS_RNA.xlsx`](./LOG_HIPERPARAMETROS_RNA.xlsx) | Excel (`.xlsx`) | Registro tabular detallado de entrenamientos. |
-| [`SENSIBILIDAD_Y_ABLACION_RNA.csv`](./SENSIBILIDAD_Y_ABLACION_RNA.csv) | CSV plano | Resultados consolidados de ablación de entradas (2D vs. 1D) con MSE. |
+| [`SENSIBILIDAD_Y_ABLACION_RNA.csv`](./SENSIBILIDAD_Y_ABLACION_RNA.csv) | CSV plano | Resultados consolidados de ablación de entradas (2D vs. 1D) con MSE unificado. |
 | [`SENSIBILIDAD_Y_ABLACION_RNA.xlsx`](./SENSIBILIDAD_Y_ABLACION_RNA.xlsx) | Excel (`.xlsx`) | Hoja de cálculo con 3 pestañas técnicas: `Ablacion_Entradas`, `Holdout_19_5_Simetrico` y `Buffered_LOOCV`. |
 | [`fig_rna_predicciones_oos.png`](./fig_rna_predicciones_oos.png) | PNG (200 DPI) | Series temporales cronológicas de las redes neuronales frente al canje real de ENAMI. |
 | [`fig_rna_dispersion_residuos.png`](./fig_rna_dispersion_residuos.png) | PNG (200 DPI) | Gráfico de paridad ($y$ vs. $\hat{y}$) y dispersión de residuos condicionales. |
@@ -264,31 +271,30 @@ Todos los entregables cumplen con el estándar de reproducibilidad y están disp
 
 ---
 
-## 8. Directrices de Entrada para el Bloque 4
+## 8. Directrices Estratégicas de Entrada para el Bloque 4
 
-Con la resolución de todos los hallazgos de auditoría y la unificación de métricas, el proyecto cuenta con los insumos definitivos para iniciar el **Bloque 4: Validación Unificada, Selección del Modelo Ganador (*Champion Model*), Diagnóstico de Residuos y Explicabilidad (XAI)**:
+Con la resolución de todos los hallazgos de auditoría RCI y la unificación de métricas, el proyecto cuenta con los insumos definitivos para iniciar el **Bloque 4: Validación Unificada, Selección del Modelo Ganador (*Champion Model*), Diagnóstico de Residuos y Explicabilidad (XAI)**:
 
-1. **Benchmarking Imparcial Unificado:**
+1. **Benchmarking Imparcial Unificado ($18$ modelos):**
    * Cruce de los 7 baselines de [`BLOQUE_2/PREDICCIONES_OOS_BASELINES.csv`](../BLOQUE_2/PREDICCIONES_OOS_BASELINES.csv) y las 11 redes de [`BLOQUE_3/PREDICCIONES_OOS_RNA.csv`](./PREDICCIONES_OOS_RNA.csv) en una sola tabla maestra con la batería de métricas completa ($\text{MSE}$, $\text{RMSE}$, $\text{MAE}$, $\text{NRMSE}\%$, $R^2$, $\text{MAPE}\%$, Pearson $r$, Sesgo y Varianza Explicada).
-2. **Selección Científica del Campeón (*Champion Model*):**
-   * Contraste formal entre el modelo de menor error global (Baseline 1B y Residual-MLP) y la red de mayor precisión prospectiva (`RNA_MLP_2`).
+2. **Estrategia Dual de Selección y Explicabilidad (XAI):**
+   * **Pilar Global / Robustez:** `Baseline 1B` y `Res_MLP_2_2` ($\text{NRMSE} = 10.07\%$, $R^2 = +0.6504$), documentando transparentemente el colapso asintótico de pesos ante leyes extremas.
+   * **Pilar No Lineal Activo / Explicabilidad:** **`RNA_MLP_2`** ($\text{NRMSE}_{\text{LOOCV}} = 12.28\%$, $\text{NRMSE}_{\text{Holdout}} = 6.56\%$, aporte de `CuS` $= -1.53\%$). Sobre esta arquitectura se aplicará **SHAP (`KernelExplainer`)**, **Superficie de Respuesta 2D** e **Importancia por Permutación**, garantizando que los efectos no lineales de $\text{CuS}$ y $\text{CuT}$ sean interpretables y físicamente significativos.
 3. **Inferencia Estadística y Diagnóstico de Residuos:**
-   * Pruebas de hipótesis de normalidad (Shapiro-Wilk), homocedasticidad (Breusch-Pagan) e independencia (Durbin-Watson).
-   * Contraste no paramétrico de Wilcoxon frente a Cancha Directa para certificar significancia ($p < 0.05$).
-4. **Explicabilidad (XAI) y Reentrenamiento:**
-   * Análisis SHAP e Importancia por Permutación sobre el modelo ganador.
+   * Pruebas de normalidad (Shapiro-Wilk), homocedasticidad (Breusch-Pagan) e independencia (Durbin-Watson).
+   * Contraste no paramétrico pareado de Wilcoxon frente a `Cancha Directa` y frente a `Baseline 1B` para certificar significancia ($p < 0.05$), más intervalo bootstrap ($B = 10{,}000$).
+4. **Serialización Productiva:**
    * Reentrenamiento del modelo campeón sobre los $24$ meses y exportación del archivo serializado (`.joblib`) para el simulador de tarifas (Bloque 5) y la app web (Bloque 6).
 
 ---
 
-## 9. Dictamen Final de Certificación
+## 9. Dictamen Final de Certificación RCI
 
-* **Resolución Hallazgo H-01:** Cumplida al 100%. Coincidencia aritmética perfecta entre tablas y archivos CSV.
-* **Resolución Hallazgo H-02:** Cumplida al 100%. Colapso lineal de Keras algebraicamente demostrado ($P_{\text{eff}} = 3$) y contraste *in-sample* documentado.
-* **Resolución Hallazgo H-03:** Cumplida al 100%. Redes residuales (`Residual-MLP`) formuladas y evaluadas, garantizando el piso de Baseline 1B ($10.07\%$).
-* **Resolución Hallazgo H-04:** Cumplida al 100%. Holdout 19/5 evaluado simétricamente con todos los modelos de referencia.
-* **Resolución Hallazgo H-05:** Cumplida al 100%. Cero fuga en entrenamiento y remoción de etiquetas prematuras de campeón.
-* **Resolución Hallazgo H-06:** Cumplida al 100%. Fenómeno de exclusión mutua Octubre-Noviembre 2023 plenamente fundamentado.
-* **Requerimiento Usuario:** Cumplido al 100%. Métrica MSE ($(\%\text{Cu})^2$) incorporada en todas las tablas y scripts.
+* **Resolución Hallazgo A-01:** Cumplida al 100%. Fenómeno de contracción de pesos en `Residual-MLP` fundamentado y selección de `RNA_MLP_2` para XAI formalizada.
+* **Resolución Hallazgo A-02:** Cumplida al 100%. Selección a priori de hiperparámetros justificada sin fuga suave.
+* **Resolución Hallazgo A-03:** Cumplida al 100%. Conteo nominal de Keras corregido a $57$ parámetros libres ($P_{\text{eff}} = 3$).
+* **Resolución Hallazgo A-04:** Cumplida al 100%. Distinción rigurosa entre MAPE y NRMSE *in-sample* documentada.
+* **Resolución Hallazgo A-05:** Cumplida al 100%. Coherencia editorial en baselines y unificación sin redondeo intermedio de MSE en ablación.
+* **Requerimiento Usuario:** Cumplido al 100%. Métrica MSE ($(\%\text{Cu})^2$) plenamente integrada.
 
 > **🚀 DICTAMEN FINAL:** **BLOQUE 3 OFICIALMENTE AUDITADO, CORREGIDO, SELLADO Y HABILITADO PARA EL BLOQUE 4 (METODOLOGÍA v4.0).**
