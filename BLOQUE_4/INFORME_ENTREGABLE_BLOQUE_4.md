@@ -24,7 +24,7 @@ El presente informe consolida el cierre de la etapa predictiva de la tesis de ti
 +----------------------------------------------------------------------------------------------------+
 | 1. Benchmarking 18 Modelos:                                                                       |
 |    - Brecha Operacional Terreno (Cancha Directa): NRMSE = 25.67%, RMSE = 0.3674%Cu, R² = -1.27     |
-|    - Campeón Mínima Varianza (Empate 1=): Baseline 1B / Res_MLP_2_2 (NRMSE = 10.07%, R² = +0.6504)  |
+|    - Campeón Mínima Varianza (Empate 1= cuádruple): Baseline 1B / Res_MLP_2_2 / Res_MLP_4 / Res_MLP_3 (NRMSE = 10.07%, R² = +0.6504) |
 |    - Campeón Explicabilidad XAI: RNA_MLP_2 (NRMSE LOOCV = 12.28%, NRMSE Holdout = 6.56%, R² = 0.48) |
 +----------------------------------------------------------------------------------------------------+
 | 2. Diagnóstico de Residuos e Inferencia Estadística:                                               |
@@ -82,8 +82,8 @@ $$\text{MSE} = \frac{1}{N}\sum_{k=1}^N (y_k - \hat{y}_k)^2, \qquad \text{RMSE} =
 $$\text{MAE} = \frac{1}{N}\sum_{k=1}^N |y_k - \hat{y}_k|, \qquad \text{MAPE} = \frac{1}{N}\sum_{k=1}^N \left|\frac{y_k - \hat{y}_k}{y_k}\right|\times 100\%$$
 $$R^2 = 1 - \frac{\sum (y_k - \hat{y}_k)^2}{\sum (y_k - \bar{y})^2}, \qquad \text{VarExp} = 1 - \frac{\text{Var}(y - \hat{y})}{\text{Var}(y)}, \qquad \text{Sesgo} = \frac{1}{N}\sum_{k=1}^N (\hat{y}_k - y_k)$$
 
-> **Nota Econométrica sobre la Varianza Explicada y el Empate Técnico (Auditoría C-04):**  
-> 1. `Res_MLP_2_2` ($\text{MSE} = 0.020781$) y `Baseline_1B` ($\text{MSE} = 0.020782$) difieren en menos de $10^{-6}\\,(\%\text{Cu})^2$. Por rigor científico, se declara formalmente **empate técnico (`1=`)**.  
+> **Nota Econométrica sobre la Varianza Explicada y el Empate Técnico Cuádruple (Auditorías C-04 y B4-01):**  
+> 1. `Res_MLP_2_2` ($\text{MSE} = 0.020781$), `Baseline_1B`, `Res_MLP_4` y `Res_MLP_3` ($\text{MSE} = 0.020782$) difieren en menos de $10^{-6}\,(\%\text{Cu})^2$. Por rigor científico, se declara formalmente **empate técnico cuádruple (`1=`)** para los cuatro modelos.  
 > 2. `Cancha_Directa` exhibe un valor aparente de $\text{Var. Explicada} = 0.6789$ porque la fórmula estándar resta el sesgo medio *in-sample* ($+0.3404\%\text{Cu}$). En cambio, en LOOCV estricto, la estimación del sesgo fuera de muestra sobre $N_{\text{train}} = 23$ induce la penalización teórica $(24/23)^2 = 1.0888$, trasladando la varianza explicada real a $0.6503$ en `Baseline_1B`.
 
 ### 2.2. Tabla Maestra Consolidada (Ranking General LOOCV)
@@ -93,8 +93,8 @@ A continuación se presenta la tabla maestra consolidada de los $18$ modelos eva
 | :---: | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | **1=** | **`Res_MLP_2_2`** | Residual-MLP $(2, 2)$ | 2D $[\text{CuT}, \text{CuS}]$ | **0.020781** | **0.1442** | **0.1178** | **10.07%** | **+0.6504** | **8.12%** | **0.8209** | $+0.0000$ | **0.6504** |
 | **1=** | **`Baseline_1B`** | Corrección Sesgo Constante | 1D $[\text{Cancha}]$ | **0.020782** | **0.1442** | **0.1178** | **10.07%** | **+0.6503** | **8.12%** | **0.8209** | $-0.0000$ | **0.6503** |
-| **3** | `Res_MLP_4` | Residual-MLP $(4,)$ | 2D $[\text{CuT}, \text{CuS}]$ | 0.020782 | 0.1442 | 0.1178 | 10.07% | +0.6503 | 8.12% | 0.8209 | $-0.0000$ | 0.6503 |
-| **4** | `Res_MLP_3` | Residual-MLP $(3,)$ | 2D $[\text{CuT}, \text{CuS}]$ | 0.020782 | 0.1442 | 0.1178 | 10.07% | +0.6503 | 8.12% | 0.8209 | $-0.0000$ | 0.6503 |
+| **1=** | `Res_MLP_4` | Residual-MLP $(4,)$ | 2D $[\text{CuT}, \text{CuS}]$ | 0.020782 | 0.1442 | 0.1178 | 10.07% | +0.6503 | 8.12% | 0.8209 | $-0.0000$ | 0.6503 |
+| **1=** | `Res_MLP_3` | Residual-MLP $(3,)$ | 2D $[\text{CuT}, \text{CuS}]$ | 0.020782 | 0.1442 | 0.1178 | 10.07% | +0.6503 | 8.12% | 0.8209 | $-0.0000$ | 0.6503 |
 | **5** | `Res_MLP_2` | Residual-MLP $(2,)$ | 2D $[\text{CuT}, \text{CuS}]$ | 0.021551 | 0.1468 | 0.1200 | 10.26% | +0.6374 | 8.22% | 0.8103 | $-0.0022$ | 0.6375 |
 | **6** | `RNA_Delgado_Keras` | Directa Keras Colapsada | 2D $[\text{CuT}, \text{CuS}]$ | 0.027735 | 0.1665 | 0.1302 | 11.64% | +0.5334 | 8.74% | 0.7410 | $+0.0022$ | 0.5334 |
 | **7** | `RidgeCV` | Lineal Regularizado ($L_2$) | 2D $[\text{CuT}, \text{CuS}]$ | 0.028403 | 0.1685 | 0.1301 | 11.78% | +0.5221 | 8.93% | 0.7248 | $+0.0108$ | 0.5241 |
@@ -132,7 +132,7 @@ A continuación se presentan los resultados auditados para los **10 modelos prin
 | **`Cancha_Directa`** | 0.3674 | $[0.3153, 0.4169]$ | 0.9852 | 0.9695 | **0.285** | 0.1709 | Homocedástica | 1.000000 | 0.000020 | $3/24$ ($12.5\%$) |
 | **`Baseline_1B`** | 0.1442 | $[0.1061, 0.1785]$ | 0.9852 | 0.9696 | **2.014** | **0.4075** | **Homocedástica** | **0.000010** | 1.000000 | Empate (`1=`) |
 | **`Res_MLP_2_2`** | 0.1442 | $[0.1065, 0.1786]$ | 0.9852 | 0.9696 | **2.014** | **0.4075** | **Homocedástica** | **0.000010** | 1.000000 | Empate (`1=`) |
-| `Res_MLP_2` | 0.1468 | $[0.1103, 0.1807]$ | 0.9828 | 0.9411 | 2.037 | 0.2140 | Homocedástica | 0.000012 | 0.250000 | $0/24$ empates |
+| `Res_MLP_2` | 0.1468 | $[0.1103, 0.1807]$ | 0.9828 | 0.9411 | 2.037 | 0.2140 | Homocedástica | 0.000012 | 0.250000 | $0/24$ ($21$ empates) |
 | `RNA_Delgado_Keras` | 0.1665 | $[0.1182, 0.2131]$ | 0.9705 | 0.6796 | 2.271 | **0.0040** | **Heterocedástica** | 0.000075 | 0.545670 | $15/24$ ($62.5\%$) |
 | `RidgeCV` | 0.1685 | $[0.1150, 0.2255]$ | 0.9078 | 0.0316 | 2.092 | **0.0228** | **Heterocedástica** | 0.000103 | 0.855336 | $14/24$ ($58.3\%$) |
 | `OLS` | 0.1697 | $[0.1188, 0.2159]$ | 0.9793 | 0.8819 | 2.310 | **0.0016** | **Heterocedástica** | 0.000088 | 0.545670 | $15/24$ ($62.5\%$) |
@@ -225,9 +225,9 @@ sys.path.append("BLOQUE_4")
 import modelos_rna
 
 # Predicción con modelo campeón RNA_MLP_2
-X_lote = np.array([[1.55, 0.18]])  # [Cancha_CuT, Cancha_CuS]
+X_lote = np.array([[1.75, 0.14]])  # [Cancha_CuT, Cancha_CuS] dentro del Convex Hull N=24
 canje_estimado = modelos_rna.predecir_rna_mlp2("BLOQUE_4/modelo_ganador_rna_mlp2.joblib", X_lote)[0]
-print(f"Ley Canje ENAMI Proyectada: {canje_estimado:.4f} %Cu")
+print(f"Ley Canje ENAMI Proyectada: {canje_estimado:.4f} %Cu")  # Proyecta 1.4076 %Cu
 ```
 
 ---
@@ -256,5 +256,11 @@ Se generaron e integraron cuatro figuras de estándar de publicación en `./BLOQ
 3. **Transición al Bloque 5:**  
    Con los 24 vectores de predicción OOS sincronizados y los pipelines serializados en formato nativo, el proyecto se encuentra formalmente habilitado para ingresar al **BLOQUE 5: Modelo Económico Dual ENAMI y Simulación de Ahorros Operacionales**.
 
+4. **Certificación y Resolución Integral de Hallazgos RCI (`B4-01` a `B4-04`):**  
+   * **B4-01 (Empate Técnico Cuádruple):** Se oficializó el ranking `1=` para los cuatro modelos de mínima varianza (`Res_MLP_2_2`, `Baseline_1B`, `Res_MLP_4`, `Res_MLP_3`), dejando a `Res_MLP_2` en el puesto 5.
+   * **B4-02 (Coherencia Dominio Empírico):** El lote de prueba para inferencia se actualizó a $\text{CuT} = 1.75\%, \text{CuS} = 0.14\%$, estrictamente dentro del *Convex Hull* real.
+   * **B4-03 (Claridad Tabular):** Se precisó la etiqueta de `Res_MLP_2` a `$0/24$ ($21$ empates)` en contraste contra `Baseline_1B`.
+   * **B4-04 (Sintaxis y Denominación Institucional):** Se corrigió la sintaxis de espaciado LaTeX a `$10^{-6}\,(\%\text{Cu})^2$` y se unificó la filiación institucional al *Departamento de Ingeniería en Minas de la Universidad de Antofagasta*.
+
 ---
-*Informe generado y auditado bajo el estándar de la Escuela de Minería de la Universidad de Antofagasta.*
+*Informe generado y auditado bajo el estándar del Departamento de Ingeniería en Minas de la Universidad de Antofagasta.*
