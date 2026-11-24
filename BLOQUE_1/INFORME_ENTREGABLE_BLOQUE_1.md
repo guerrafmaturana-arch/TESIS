@@ -20,7 +20,7 @@ El presente informe consolida los resultados, diagnósticos econométricos, matr
 Conforme a la **Metodología v4.0** y a la resolución de las observaciones críticas de la auditoría experta, este módulo concentra **la totalidad del análisis estadístico, varianzas, normalidad, atípicos, dependencias y multicolinealidad**, blindando las decisiones de diseño previas al modelado en los Bloques 2 y 3:
 
 1. **Contraste de Varianzas y Estrategia de Escalado:** Se demostró que la ley de acopio $\text{Cancha\_CuT}$ ($s^2 = 0.058128\,(\%\text{Cu})^2$) posee una varianza muestral **$61.64$ veces superior** a la fracción de cobre soluble $\text{Cancha\_CuS}$ ($s^2 = 0.000943\,(\%\text{Cu})^2$). Para evitar que $\text{CuT}$ absorba artificialmente los gradientes de optimización, se establece el **escalado Z-score obligatorio (`StandardScaler`) encapsulado en cada pliegue LOOCV** (`Pipeline`), complementado con una prueba de sensibilidad frente a **`RobustScaler`** (centrado en mediana e IQR) debido a la marcada curtosis de $\text{CuS}$ ($+5.862$).
-2. **Descomposición Sesgo-Varianza y la Meta Predictiva Real:** Se descompuso algebraicamente el error cuadrático medio histórico ($\text{MSE} = 0.1350\,(\%\text{Cu})^2$, $\text{MECM} \approx 26\%$), demostrando que el **$85.83\%$** obedece a sobreestimación sistemática ($\bar{e} = +0.3404\%\text{Cu}$, $\bar{e}^2 = 0.1159\,(\%\text{Cu})^2$) y el **$14.17\%$** corresponde a la **varianza de la discrepancia empírica** ($\sigma^2_{\text{error}} = 0.0191\,(\%\text{Cu})^2$, $\text{NRMSE} = 9.66\%$). Lejos de ser ruido puramente irreducible, esta varianza contiene señal geometalúrgica no lineal explicable (el objetivo de la RNA para perforar el piso del $9.66\%$ hacia $\text{NRMSE} \approx 8.63\%$). Para transparentar esto ante la comisión, se compromete en el Bloque 2 el modelo **Baseline 1B (Corrección de Sesgo Constante en LOOCV)**.
+2. **Descomposición Sesgo-Varianza y Formulación de la Hipótesis Predictiva (Auditoría B1-02 y B1-03):** Se descompuso algebraicamente el error cuadrático medio histórico ($\text{MSE} = 0.1350\,(\%\text{Cu})^2$, $\text{MECM} \approx 26\%$), demostrando que el **$85.86\%$** obedece a sobreestimación sistemática ($\bar{e} = +0.3404\%\text{Cu}$, $\bar{e}^2 = 0.1159\,(\%\text{Cu})^2$) y el **$14.14\%$** corresponde a la **varianza de la discrepancia empírica** ($\sigma^2_{\text{error}} = 0.0191\,(\%\text{Cu})^2$, $\text{NRMSE} = 9.66\%$). Lejos de considerarse ruido puramente irreducible, esta varianza alberga estructura geometalúrgica explicable ligada al tenor de ley y al contenido de solubles (`CuS`). Sobre esta base se formula la **hipótesis de investigación** de evaluar si una red neuronal parsimoniosa logra capturar dicha variabilidad compleja para aproximarse al umbral referencial del Dr. José Delgado Vega ($\text{NRMSE} \approx 8.63\%$). Para contrastar esto con rigor en el Bloque 2, se establece el modelo **Baseline 1B (Corrección de Sesgo Constante en LOOCV)** como cota mínima de referencia.
 3. **Efecto de Apalancamiento (*Leverage*) y el Desafío de la Segunda Neurona (`CuS`):** 
    * Se demostró que Pearson ($r = +0.8347$, $p < 0.0001$) supera a Spearman ($\rho = +0.7116$, $p < 0.0001$) en $N = 24$ por el fuerte apalancamiento de Octubre ($2.21\%\text{Cu}$) y Noviembre 2023 ($2.47\%\text{Cu}$). Al excluirlos temporalmente para diagnóstico ($N = 22$), Pearson cae a **$r = +0.6181$** ($p = 0.0022$), quedando por debajo de Spearman (**$\rho = +0.6253$**, $p = 0.0019$).
    * **Hallazgo clave verificado sobre `Cancha_CuS`:** Fuera de los dos pulsos extremos, `Cancha_CuS` presenta correlación lineal **no significativa al $5\%$** con `Canje_CuT` ($r = +0.3688, p = 0.0912$; $\rho = +0.3520, p = 0.1082$). Su valor predictivo radica en modular la respuesta ante frentes oxidados/mixtos, lo que exige evaluar su aporte real mediante **`LassoCV`**, **estudio de ablación (2 vs 1 entrada)**, Permutación y SHAP en los Bloques 2–4.
@@ -42,8 +42,8 @@ Conforme a la **Metodología v4.0** y a la resolución de las observaciones crí
 | **Cancha CuIn ($\%$)** | 1.6246 | 1.6033 | 1.6150 | 0.2223 | 0.049417 | 0.2176 | 0.047358 | 13.68 | 0.2025 | +1.1570 | +1.4230 | 0.9064 | 0.0278 | **RECHAZADA** |
 | **PSJ CuT ($\%$)** | 1.4304 | 1.4083 | 1.3900 | 0.2496 | 0.062282 | 0.2443 | 0.059687 | 17.45 | 0.2475 | +1.4580 | +3.2840 | 0.8856 | 0.0113 | **RECHAZADA** |
 | **Canje CuT ($\%$)** | 1.4313 | 1.4083 | 1.3950 | 0.2491 | 0.062020 | 0.2438 | 0.059436 | 17.40 | 0.2200 | +1.5410 | +3.5540 | 0.8787 | 0.0078 | **RECHAZADA** |
-| **Sesgo Canje ($\%$)** | +0.3404 | +0.3400 | +0.3500 | 0.1411 | 0.019917 | 0.1382 | 0.019087 | 41.46 | 0.1925 | -0.1970 | -0.2980 | 0.9782 | 0.8491 | ACEPTADA |
-| **Ratio Solubilidad ($\%$)** | 8.39 | 8.24 | 8.04 | 1.45 | 2.1025 | 1.42 | 2.0149 | 17.28 | 1.40 | +0.7670 | +0.2790 | 0.9392 | 0.1554 | ACEPTADA |
+| **Sesgo Canje ($\%$)** | +0.3404 | +0.3430 | +0.3600 | 0.1411 | 0.019917 | 0.1382 | 0.019087 | 41.46 | 0.1925 | -0.1652 | -0.4804 | **0.9852** | **0.9695** | ACEPTADA |
+| **Ratio Solubilidad ($\%$)** | 8.30 | 8.25 | 8.33 | 1.16 | 1.3477 | 1.1365 | 1.2915 | 13.98 | 1.07 | +0.7824 | +1.7998 | **0.9463** | **0.2251** | ACEPTADA |
 
 *Nota técnica: Entregables exportados en [`TABLA_ESTADISTICOS_EDA_N24.csv`](./TABLA_ESTADISTICOS_EDA_N24.csv) y [`TABLA_ESTADISTICOS_EDA_N24.xlsx`](./TABLA_ESTADISTICOS_EDA_N24.xlsx).*
 
@@ -56,18 +56,18 @@ $$\text{Ratio de Varianza} = \frac{s^2_{\text{Cancha\_CuT}}}{s^2_{\text{Cancha\_
 ### 2.3. Descomposición Sesgo-Varianza y la Meta Predictiva Real
 El error cuadrático medio histórico ($\text{MSE} = 0.1350\,(\%\text{Cu})^2$, $\text{NRMSE} = 25.67\% \approx 26\%$) se descompone de forma exacta en:
 $$\text{MSE} = \bar{e}^2 + \sigma^2_{\text{error}}$$
-$$\bar{e}^2 = (0.3404)^2 = 0.11588\,(\%\text{Cu})^2 \quad (\mathbf{85.83\%} \text{ del MSE total})$$
-$$\sigma^2_{\text{error}} = 0.01909\,(\%\text{Cu})^2 \quad (\mathbf{14.17\%} \text{ del MSE total})$$
+$$\bar{e}^2 = (0.3404)^2 = 0.11588\,(\%\text{Cu})^2 \quad (\mathbf{85.86\%} \text{ del MSE total})$$
+$$\sigma^2_{\text{error}} = 0.01909\,(\%\text{Cu})^2 \quad (\mathbf{14.14\%} \text{ del MSE total})$$
 $$\text{MSE} = 0.11588 + 0.01909 = 0.13497 \approx 0.1350\,(\%\text{Cu})^2$$
 
-#### La Trampa del Piso Trivial ($9.66\%$) y el Mérito del Modelo
-Si un operador simplemente restara el sesgo constante histórico ($\hat{y} = \text{CuT}_{\text{cancha}} - 0.3404$), el desempeño teórico trivial sería:
+#### La Trampa del Piso Trivial ($9.66\%$) y Formulación de la Hipótesis de Investigación (Auditoría B1-02)
+Si un operador simplemente restara el sesgo constante histórico ($\hat{y} = \text{CuT}_{\text{cancha}} - 0.3404$), el desempeño teórico trivial in-sample sería:
 * $\text{MSE}_{\text{trivial}} = \sigma^2_{\text{error}} = 0.01909\,(\%\text{Cu})^2$
 * $\text{RMSE}_{\text{trivial}} = \sqrt{0.01909} = 0.1382\%\text{Cu}$
-* $\text{NRMSE}_{\text{trivial}} = \frac{0.1382}{1.4313} \times 100\% = \mathbf{9.66\%}$ (y en validación cruzada LOOCV real: $\text{NRMSE} = \mathbf{10.07\%}$, $R^2 = \mathbf{0.6503}$)
+* $\text{NRMSE}_{\text{trivial}} = \frac{0.1382}{1.4313} \times 100\% = \mathbf{9.66\%}$ *(piso teórico in-sample de deducción constante)*
 
-Por lo tanto, la varianza residual de $14.17\%$ **NO es ruido puramente irreducible**. Contiene:
-1. **Señal Geometalúrgica Estructurada (Explicable):** La variación del sesgo respecto al nivel de ley ($\text{Cov}(\text{CuT}, \text{Sesgo}) = +0.0080$) y al régimen de alteración/óxidos (`CuS`). Es esta estructura la que permite a la red neuronal parsimoniosa superar la deducción fija y alcanzar el umbral de referencia del Dr. José Delgado Vega ($\text{NRMSE} \approx 8.63\%$, $R^2 > 0.74$).
+Por lo tanto, la varianza residual de **$14.14\%$** **NO es ruido puramente irreducible**. Contiene:
+1. **Señal Geometalúrgica Estructurada (Explicable):** La variación del sesgo respecto al nivel de ley ($\text{Cov}(\text{CuT}, \text{Sesgo}) = +0.0080$) y al régimen de alteración/óxidos (`CuS`). Es esta estructura la que permite formular la **hipótesis de investigación** de si una red neuronal parsimoniosa es capaz de capturar relaciones no lineales complejas para aproximarse al umbral referencial del Dr. José Delgado Vega ($\text{NRMSE} \approx 8.63\%$), lo cual será formalmente evaluado en los Bloques 2, 3 y 4 mediante protocolos de generalización ciega.
 2. **Incertidumbre Física Irreducible:** Tolerancias de balanza romana, segregación por cono de acopio y tolerancias analíticas de ENAMI ($\pm 0.04\%\text{ a }\pm 0.06\%\text{Cu}$).
 
 > **Compromiso para Bloque 2:** Se incorpora **Baseline 1B (Corrección de Sesgo en LOOCV)** como modelo de control para demostrar rigurosamente que el Machine Learning no se limita a corregir una constante, sino que modela la variabilidad compleja del yacimiento.
@@ -92,7 +92,7 @@ $$\text{Var}(\text{CuT}) + \text{Var}(\text{Canje}) - 2\text{Cov}(\text{CuT}, \t
 
 ### 3.2. Paradoja Pearson vs. Spearman y Efecto Apalancamiento (*Leverage*)
 
-| Predictor | Pearson $r$ ($N=24$) | $p$-valor Pearson ($N=24$) | Spearman $\rho$ ($N=24$) | $p$-valor Spearman ($N=24$) | Pearson $r$ ($N=22$) | $p$-valor Pearson ($N=22$) | Spearman $\rho$ ($N=22$) | $p$-valor Spearman ($N=22$) | Información Mutua ($\text{MI}$) |
+| Predictor | Pearson $r$ ($N=24$) | $p$-valor Pearson ($N=24$) | Spearman $\rho$ ($N=24$) | $p$-valor Spearman ($N=24$) | Pearson $r$ ($N=22$, solo diag.) | $p$-valor Pearson ($N=22$) | Spearman $\rho$ ($N=22$, solo diag.) | $p$-valor Spearman ($N=22$) | Información Mutua ($\text{MI}$) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | **Cancha CuT** | **+0.8347** | $3.96 \times 10^{-7}$ | **+0.7116** | $9.66 \times 10^{-5}$ | **+0.6181** | $0.0022$ | **+0.6253** | $0.0019$ | **0.2156** |
 | **Cancha CuS** | **+0.6406** | $7.46 \times 10^{-4}$ | **+0.5024** | $1.24 \times 10^{-2}$ | **+0.3688** | **$0.0912$** | **+0.3520** | **$0.1082$** | **0.1437** |
@@ -115,12 +115,12 @@ $$\text{Var}(\text{CuT}) + \text{Var}(\text{Canje}) - 2\text{Cov}(\text{CuT}, \t
 * **$\text{Cancha\_CuT}$:** $W = 0.8871$, $p\text{-valor} = 0.0116 < 0.05 \implies$ **Rechazada**.
 * **$\text{Cancha\_CuS}$:** $W = 0.7472$, $p\text{-valor} = 0.00003 < 0.05 \implies$ **Rechazada**.
 * **$\text{Canje\_CuT}$:** $W = 0.8787$, $p\text{-valor} = 0.0078 < 0.05 \implies$ **Rechazada**.
-* **$\text{Sesgo\_Canje}$:** $W = 0.9782$, $p\text{-valor} = 0.8491 > 0.05 \implies$ **Aceptada (Normal)**.
+* **$\text{Sesgo\_Canje}$:** $W = 0.9852$, $p\text{-valor} = 0.9695 > 0.05 \implies$ **Aceptada (Normal)** *(Unificado con el vector de residuos Cancha_Directa del Bloque 4 - Auditoría B1-01)*.
 
 ![Distribuciones y Gráficos Q-Q Normales](./fig_eda_distribuciones_qq.png)
 
 ### 4.2. Rigor Conceptual ante el Tribunal (Teorema de Gauss-Markov)
-En teoría de regresión lineal por MCO, **no es requisito que las variables explicativas ($X$) ni la respuesta marginal ($Y$) sigan distribuciones normales**. Los supuestos del Teorema de Gauss-Markov recaen sobre los **residuos condicionales** ($\varepsilon \mid X$), los cuales en la discrepancia empírica de este yacimiento sí aceptan la normalidad ($p = 0.8491$).
+En teoría de regresión lineal por MCO, **no es requisito que las variables explicativas ($X$) ni la respuesta marginal ($Y$) sigan distribuciones normales**. Los supuestos del Teorema de Gauss-Markov recaen sobre los **residuos condicionales** ($\varepsilon \mid X$), los cuales en la discrepancia empírica de este yacimiento sí aceptan la normalidad con alta holgura ($p = 0.9695$, unificado con el Bloque 4).
 
 No obstante, el rechazo de normalidad en las leyes brutas (asimetría positiva y curtosis en $\text{CuS}$) alerta sobre la presencia de observaciones con **alto apalancamiento (*leverage*)** que amenazan la estabilidad de hiperplanos lineales rígidos en muestras de tamaño $N = 24$. Esto fundamenta sólidamente:
 1. El uso de contrastes no paramétricos (Spearman, Wilcoxon).
@@ -137,7 +137,8 @@ Se computó la distancia de Mahalanobis ($D_M^2$) con $p = 2$ predictores $(\tex
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
 | **2023-10** | 2.21 | 0.26 | 1.79 | **14.2481** | **0.0008** | **SÍ** | SÍ | SÍ | Enriquecimiento supergeno; alta ley de óxidos (crisocola/malaquita). |
 | **2023-11** | 2.47 | 0.20 | 2.27 | **8.4700** | **0.0145** | **SÍ** | SÍ | SÍ | Frente competente de alta ley sulfurada (calcocina/bornita). |
-| **2023-01** | 2.16 | 0.17 | 1.55 | 3.5123 | 0.1727 | NO | SÍ | NO | Alta ley sulfurada regular; dentro de la elipse multivariada al 95%. |
+| **2023-09** | 2.01 | 0.12 | 1.55 | **5.2671** | **0.0718** | NO | NO | NO | Frente sulfurado regular con baja solubilidad (3° mayor $D_M^2$, dentro de elipse al 95%). |
+| **2023-01** | 2.16 | 0.17 | 1.55 | **2.7900** | **0.2478** | NO | SÍ | NO | Alta ley sulfurada regular; dentro de la elipse multivariada al 95% ($D_M^2 = 2.7900$ verificado). |
 
 ![Detección de Outliers y Elipse de Mahalanobis](./fig_eda_outliers_mahalanobis.png)
 
@@ -162,8 +163,11 @@ Siguiendo la pauta econométrica de Box-Jenkins para series temporales acotadas 
 
 ![Autocorrelación Serial Temporal ACF (Rezagos 1 a 6)](./fig_eda_autocorrelacion_acf.png)
 
-* **Validación de LOOCV:** El sesgo de conciliación carece de memoria temporal autorregresiva en todos los rezagos ($r_1 = -0.0866$), validando formalmente **LOOCV** ($24$ pliegues independientes).
+* **Validación de LOOCV:** El sesgo de conciliación carece de memoria temporal autorregresiva en todos los rezagos evaluados ($r_1 = -0.0866$, $r_6 = -0.1036$), validando formalmente **LOOCV** ($24$ pliegues independientes).
 * **Blindaje Geoestadístico (Buffered-LOOCV):** Debido a la inercia geológica de `Cancha_CuT` ($r_1 = +0.4467$) por continuidad espacial entre meses adyacentes, en los Bloques 2 y 3 se ejecutará una **prueba de sensibilidad complementaria con *Buffered-LOOCV*** (excluyendo $t-1$ y $t+1$).
+
+> **Nota Técnica de Auditoría RCI sobre Lag 6 en `Canje_CuT` ($r_6 = -0.4276$, B1-04):**  
+> Aunque en el rezago 6 la serie de `Canje_CuT` excede levemente la banda inferior de Bartlett ($\pm 0.4001$), este comportamiento refleja la transición operacional entre frentes de explotación: el pulso de alta ley supergena de fines de 2023 (Oct/Nov) frente a las fases de ley media-baja explotadas hacia mediados de 2024 (un semestre después). Lo crucial para la metodología de modelado es que la variable de error (**`Sesgo_Canje`**) es **ruido blanco puro en la totalidad de los rezagos** ($r_1 = -0.0866, \dots, r_6 = -0.1036 \in [-0.4001, +0.4001]$), demostrando que el error de estimación no arrastra componentes autorregresivos ni viola la independencia entre pliegues de validación.
 
 ---
 
@@ -206,8 +210,8 @@ Se calculó el VIF mediante `sm.add_constant(X)`, depurando la presentación par
 ## 9. Dictamen de Auditoría y Directrices para Bloque 2
 
 * **Criterio 1: Caracterización Univariada y Contraste de Varianzas:** Satisfecho ($s^2_{\text{CuT}} / s^2_{\text{CuS}} = 61.64\times \implies$ justifica `StandardScaler` obligatorio y prueba con `RobustScaler`).
-* **Criterio 2: Descomposición del Error y Benchmark Trivial:** Satisfecho ($85.83\%$ sesgo sistemático, $14.17\%$ varianza de discrepancia explicable por mineralogía $\implies$ justifica incorporar **Baseline 1B en LOOCV**).
-* **Criterio 3: Rigor Econométrico Gauss-Markov:** Satisfecho (no normalidad en $X$ interpretada como riesgo de *leverage* en hiperplanos lineales $\implies$ justifica modelos no lineales regularizados).
+* **Criterio 2: Descomposición del Error y Formulación de Hipótesis:** Satisfecho ($85.86\%$ sesgo sistemático, $14.14\%$ varianza de discrepancia que combina mineralogía y ruido $\implies$ justifica formular la hipótesis del modelo no lineal e incorporar **Baseline 1B en LOOCV**).
+* **Criterio 3: Rigor Econométrico Gauss-Markov y Normalidad del Sesgo:** Satisfecho (residuos del sesgo empírico aceptan normalidad con $W = 0.9852, p = 0.9695$, unificado con Bloque 4; no normalidad en $X$ interpretada como riesgo de *leverage* $\implies$ justifica modelos no lineales regularizados).
 * **Criterio 4: Efecto Apalancamiento y Desafío de `CuS`:** Satisfecho ($r = +0.3688, p = 0.0912$ en $N = 22 \implies$ exige prueba de ablación de entradas en Bloques 2–4).
 * **Criterio 5: Retención Geológica de Outliers:** Satisfecho (frentes reales de ENAMI; no se eliminan).
 * **Criterio 6: Autocorrelación Acotada a Rezagos 1 a 6:** Satisfecho (ruido blanco en $e_{\text{emp}} \implies$ valida LOOCV; inercia en $\text{CuT} \implies$ Buffered-LOOCV).
