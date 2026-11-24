@@ -82,10 +82,9 @@ A partir del archivo maestro `Data Cobrizo.xlsx` (`Sheet1`), se extrajeron los $
 
 ### 3.2. Certificación de Calidad de Datos
 * **Valores Faltantes y Duplicados:** Cero ($0$) datos nulos y cero ($0$) filas repetidas en todas las variables.
-* **Ley de Conservación Metalúrgica:** Se verificó la consistencia química $\text{CuT} = \text{CuS} + \text{CuIn}$, detectándose discrepancias máximas acotadas por redondeo analítico a dos decimales en las planillas de faena:
-  $$\max |\text{CuT}_{\text{cancha}} - (\text{CuS}_{\text{cancha}} + \text{CuIn}_{\text{cancha}})| = 0.01\%\text{Cu}$$
-  $$\max |\text{Canje\_CuT} - (\text{Canje\_CuS} + \text{Canje\_CuIn})| = 0.20\%\text{Cu}$$
-  *(Nota técnica: La variable objetivo de venta corresponde de manera unívoca al ensayo oficial liquidado `Canje_CuT` emitido por ENAMI).*
+* **Ley de Conservación Metalúrgica y Calidad de Ensayos:** Se verificó la consistencia química $\text{CuT} = \text{CuS} + \text{CuIn}$:
+  * En **Cancha**: Se confirma balance exacto con una discrepancia máxima acotada de $\max |\text{CuT}_{\text{cancha}} - (\text{CuS}_{\text{cancha}} + \text{CuIn}_{\text{cancha}})| = 0.01\%\text{Cu}$, explicable íntegramente por redondeo analítico a dos decimales.
+  * En **Canje**: Se detecta una discrepancia que alcanza hasta $\max |\text{Canje\_CuT} - (\text{Canje\_CuS} + \text{Canje\_CuIn})| = 0.20\%\text{Cu}$ durante el año 2024, donde la suma de solubles e insolubles supera sistemáticamente a la ley total entre $+0.06\%\text{Cu}$ y $+0.20\%\text{Cu}$. **Auditoría RCI (B0-02):** Esta desviación no se debe a redondeo analítico, sino a una **inconsistencia de registro de origen en las columnas auxiliares (`Canje_CuS`, `Canje_CuIn`) del archivo Excel histórico de faena**. Se certifica que el modelado predictivo y la valorización comercial emplean de forma exclusiva e indiscutible el ensayo oficial liquidado **`Canje_CuT`**, el cual cuenta con trazabilidad analítica de laboratorio certificada por ENAMI.
 * **Tonelaje Total Acopiado y Pesado:** $286{,}704\text{ toneladas}$ estimadas en acopio (`Cancha_Ton`) y **$295{,}884.67\text{ toneladas}$** certificadas en báscula puente (`Romana_Ton`, suma dinámica exacta del dataset auditado, promedio mensual de $12{,}328.53\text{ t/mes}$), insumo maestro para el Bloque 5.
   > **Regla Operativa de Uso de Tonelajes en el Repositorio:**
   > * **Bloques 1 al 4 (EDA, Modelado y Validación Predictiva):** **NO se utilizan tonelajes.** Todo el análisis exploratorio y los algoritmos predictivos operan estrictamente sobre el tensor de leyes minerales: Entradas ($X \in \mathbb{R}^{24 \times 2}$): `Cancha_CuT` y `Cancha_CuS`; Salida ($y \in \mathbb{R}^{24 \times 1}$): `Canje_CuT`.
@@ -123,38 +122,44 @@ Conforme a las circulares mensuales oficiales de la Gerencia Comercial de ENAMI 
 
 $$\text{Tarifa Unitaria (US\$/tms)} = \text{Tarifa Base}_{2.5\%} - \text{Escala}_{1\%} \times (2.5 - \text{Ley}_{\text{Canje}}) - \text{Cargos Reglamentarios}$$
 
+*(Aclaración Comercial B0-03: El término **`Cargos Reglamentarios`** integra el descuento del **Fondo de Estabilización de Precios** [`Flot_Fondo_Estab_USD_tms_1pct`], aplicado conforme a la normativa ministerial de ENAMI cuando la cotización internacional del cobre LME sobrepasa el precio de sustentación vigente, operando como un cargo de retención por unidad de ley).*
+
 $$\text{Valor Lote (USD)} = \text{TMS} \times \text{Tarifa Unitaria (US\$/tms)}$$
 
 ![Evolución Parámetros ENAMI](./fig_evolucion_tarifas_enami.png)
 
-### 5.2. Síntesis Consolidada de Parámetros Mensuales ($N = 24$)
+### 5.2. Síntesis Consolidada de Parámetros Mensuales ($N = 24$) (Homologada 100% US$/tms - Auditoría B0-01)
 
-| Periodo | Cobre LME ($\text{¢US\$/lb}$) | Tipo Cambio ($\text{\$/US\$}$) | Flot. Base $2.5\%\text{Cu}$ ($\text{US\$/tms}$) | Escala $1\%\text{Cu}$ ($\text{US\$/tms}\cdot 1\%$) | Fondo Estab. ($\text{US\$/tms}\cdot 1\%$) | Subprod. Cu Insol. ($\text{US\$/tms}\cdot 1\%$) |
+> **Nota Técnica de Homologación Monetaria (Auditoría RCI B0-01):**  
+> En las resoluciones PDF originales de ENAMI, 22 de las 24 circulares expresaban los cargos en miles de pesos chilenos (`MCLP/tms`), mientras que abril de 2023 y mayo de 2024 se emitieron directamente en dólares (`US$/tms`). Para evitar distorsiones en la valoración financiera del Bloque 5, la totalidad de los 24 meses ha sido estrictamente convertida a dólares oficiales mediante $\text{Valor}_{\text{USD}} = (\text{Valor}_{\text{MCLP}} \times 1{,}000) / \text{Tipo\_Cambio}$.  
+> La consistencia queda certificada por la maquila implícita ($2.5 \times \text{Escala} - \text{Base}$), la cual converge con exactitud matemática a **$34.66\text{ US\$/tms}$** (enero 2023), **$35.65\text{ US\$/tms}$** (febrero 2023 a enero 2024) y **$39.60\text{ US\$/tms}$** (febrero a diciembre 2024).
+
+| Periodo | Cobre LME (¢US$/lb) | Tipo Cambio ($/US$) | Flot. Base 2.5%Cu (US$/tms) | Escala 1%Cu (US$/tms·1%) | Fondo Estab. (US$/tms·1%) | Subprod. Cu Insol. (US$/tms·1%) |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **2023-01** | 379.530 | 859.51 | 115.523 | 58.125 | 0.000 | 50.469 |
-| **2023-02** | 408.220 | 781.49 | 113.222 | 56.433 | 3.224 | 49.236 |
-| **2023-03** | 406.200 | 802.93 | 115.545 | 57.668 | 3.062 | 50.328 |
+| **2023-01** | 379.530 | 859.51 | 134.406 | 67.626 | 0.000 | 58.718 |
+| **2023-02** | 408.220 | 781.49 | 144.880 | 72.212 | 4.125 | 63.003 |
+| **2023-03** | 406.200 | 802.93 | 143.904 | 71.822 | 3.813 | 62.680 |
 | **2023-04** | 400.781 | 789.32 | 141.290 | 70.776 | 2.976 | 61.819 |
-| **2023-05** | 399.796 | 801.61 | 112.879 | 56.582 | 2.264 | 49.429 |
-| **2023-06** | 373.500 | 804.60 | 103.094 | 52.711 | 0.000 | 46.248 |
-| **2023-07** | 380.393 | 802.68 | 105.516 | 53.653 | 0.000 | 47.017 |
-| **2023-08** | 383.071 | 826.01 | 109.650 | 55.639 | 0.000 | 48.736 |
-| **2023-09** | 378.830 | 853.86 | 111.601 | 56.816 | 0.000 | 49.803 |
-| **2023-10** | 375.160 | 906.84 | 116.920 | 59.699 | 0.000 | 52.364 |
-| **2023-11** | 360.137 | 889.74 | 108.267 | 55.995 | 0.000 | 49.250 |
-| **2023-12** | 370.764 | 869.56 | 110.269 | 56.508 | 0.000 | 49.603 |
-| **2024-01** | 380.750 | 884.59 | 116.436 | 59.189 | 0.000 | 51.866 |
-| **2024-02** | 378.491 | 957.86 | 122.521 | 64.181 | 0.000 | 55.967 |
-| **2024-03** | 376.969 | 969.91 | 123.350 | 64.703 | 0.000 | 56.436 |
-| **2024-04** | 393.520 | 982.38 | 132.779 | 68.673 | 0.000 | 59.748 |
+| **2023-05** | 399.796 | 801.61 | 140.815 | 70.585 | 2.824 | 61.662 |
+| **2023-06** | 373.500 | 804.60 | 128.131 | 65.512 | 0.000 | 57.480 |
+| **2023-07** | 380.393 | 802.68 | 131.455 | 66.842 | 0.000 | 58.575 |
+| **2023-08** | 383.071 | 826.01 | 132.747 | 67.359 | 0.000 | 59.002 |
+| **2023-09** | 378.830 | 853.86 | 130.702 | 66.540 | 0.000 | 58.327 |
+| **2023-10** | 375.160 | 906.84 | 128.931 | 65.832 | 0.000 | 57.743 |
+| **2023-11** | 360.137 | 889.74 | 121.684 | 62.934 | 0.000 | 55.353 |
+| **2023-12** | 370.764 | 869.56 | 126.810 | 64.985 | 0.000 | 57.044 |
+| **2024-01** | 380.750 | 884.59 | 131.627 | 66.911 | 0.000 | 58.633 |
+| **2024-02** | 378.491 | 957.86 | 127.911 | 67.005 | 0.000 | 58.429 |
+| **2024-03** | 376.969 | 969.91 | 127.177 | 66.710 | 0.000 | 58.187 |
+| **2024-04** | 393.520 | 982.38 | 135.161 | 69.905 | 0.000 | 60.820 |
 | **2024-05** | 430.116 | 954.36 | 152.814 | 76.966 | 5.789 | 66.641 |
-| **2024-06** | 459.447 | 917.98 | 153.269 | 75.848 | 5.314 | 65.458 |
-| **2024-07** | 437.336 | 951.02 | 148.642 | 74.521 | 5.505 | 64.469 |
-| **2024-08** | 426.085 | 938.94 | 141.658 | 71.536 | 4.726 | 61.969 |
-| **2024-09** | 406.587 | 917.38 | 129.776 | 66.442 | 1.853 | 57.701 |
-| **2024-10** | 419.777 | 900.91 | 133.179 | 67.542 | 3.654 | 58.556 |
-| **2024-11** | 432.693 | 950.89 | 146.491 | 73.659 | 5.504 | 63.758 |
-| **2024-12** | 411.625 | 977.32 | 140.631 | 71.733 | 2.734 | 62.255 |
+| **2024-06** | 459.447 | 917.98 | 166.963 | 82.625 | 5.789 | 71.307 |
+| **2024-07** | 437.336 | 951.02 | 156.297 | 78.359 | 5.788 | 67.789 |
+| **2024-08** | 426.085 | 938.94 | 150.870 | 76.188 | 5.033 | 65.999 |
+| **2024-09** | 406.587 | 917.38 | 141.464 | 72.426 | 2.020 | 62.898 |
+| **2024-10** | 419.777 | 900.91 | 147.827 | 74.971 | 4.056 | 64.996 |
+| **2024-11** | 432.693 | 950.89 | 154.057 | 77.463 | 5.788 | 67.051 |
+| **2024-12** | 411.625 | 977.32 | 143.894 | 73.398 | 2.797 | 63.700 |
 
 *(Nota de auditoría: Los valores del documento facsimilar `ABRIL 2023.pdf` (`Flot_Base_USD_tms = 141.290` y `Flot_Escala_USD_tms_1pct = 70.776`) quedan certificados para doble verificación visual antes de ejecutar la simulación económica del Bloque 5).*
 
