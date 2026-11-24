@@ -91,17 +91,21 @@ sujeto a $|y_i - f(x_i)| \le \epsilon + \xi_i^{(*)}$. Los hiperparámetros $C \i
 
 ### 3.1. Tabla Comparativa de Métricas de Evaluación Fuera de Muestra ($N = 24$)
 
-| Modelo de Referencia | RMSE ($\%\text{Cu}$) | MAE ($\%\text{Cu}$) | NRMSE ($\%$) | $R^2$ Score | MAPE ($\%$) | Pearson $r$ | Varianza Residual $s^2_e$ |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Línea Base 1A (Cancha Directa)** | 0.3674 | 0.3404 | 25.67 | -1.2709 | 24.90 | +0.8347 | 0.019917 |
-| **Baseline 1B (Sesgo Constante LOOCV)** | **0.1442** | **0.1178** | **10.07** | **+0.6503** | **8.12** | **+0.8209** | **0.021676** |
-| **OLS (Regresión Lineal Múltiple)** | 0.1697 | 0.1318 | 11.85 | +0.5156 | 8.82 | +0.7346 | 0.030043 |
-| **RidgeCV ($L_2$)** | 0.1685 | 0.1301 | 11.78 | +0.5221 | 8.93 | +0.7248 | 0.029639 |
-| **LassoCV ($L_1$)** | 0.1760 | 0.1373 | 12.30 | +0.4789 | 9.23 | +0.7047 | 0.032321 |
-| **ElasticNetCV ($L_1 + L_2$)** | 0.1769 | 0.1369 | 12.36 | +0.4735 | 9.21 | +0.6992 | 0.032658 |
-| **SVR (Kernel RBF)** | 0.2387 | 0.1796 | 16.68 | +0.0412 | 12.11 | +0.4546 | 0.059489 |
+| Modelo de Referencia | MSE ($(\%\text{Cu})^2$) | RMSE ($\%\text{Cu}$) | MAE ($\%\text{Cu}$) | NRMSE ($\%$) | $R^2$ Score | MAPE ($\%$) | Pearson $r$ | Sesgo ($\%\text{Cu}$) | Varianza Residual $s^2_e$ |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Línea Base 1A (Cancha Directa)** | 0.134971 | 0.3674 | 0.3404 | 25.67 | -1.2709 | 24.90 | +0.8347 | +0.3404 | 0.019917 |
+| **Baseline 1B (Sesgo Constante LOOCV)** | **0.020782** | **0.1442** | **0.1178** | **10.07** | **+0.6503** | **8.12** | **+0.8209** | **+0.0000** | **0.021676** |
+| **OLS (Regresión Lineal Múltiple)** | 0.028789 | 0.1697 | 0.1318 | 11.85 | +0.5156 | 8.82 | +0.7346 | -0.0008 | 0.030043 |
+| **RidgeCV ($L_2$)** | 0.028403 | 0.1685 | 0.1301 | 11.78 | +0.5221 | 8.93 | +0.7248 | +0.0097 | 0.029639 |
+| **LassoCV ($L_1$)** | 0.030971 | 0.1760 | 0.1373 | 12.30 | +0.4789 | 9.23 | +0.7047 | +0.0062 | 0.032321 |
+| **ElasticNetCV ($L_1 + L_2$)** | 0.031294 | 0.1769 | 0.1369 | 12.36 | +0.4735 | 9.21 | +0.6992 | +0.0080 | 0.032658 |
+| **SVR (Kernel RBF)** | 0.056986 | 0.2387 | 0.1796 | 16.68 | +0.0412 | 12.11 | +0.4546 | +0.0075 | 0.059489 |
 
 *Nota de rigor: Las métricas corresponden al vector completo de 24 predicciones fuera de muestra generadas de manera ciega (una a una).*
+
+> **Nota Metodológica sobre Varianza Residual ($s^2_e$) y Pearson $r$ (Auditoría RCI B2-02 y B2-04):**  
+> * Nótese que `Cancha Directa` exhibe la varianza residual muestral más baja ($s_e^2 = 0.019917$) y el mayor coeficiente de correlación lineal ($r = +0.8347$). Esto obedece a que tanto $s_e^2$ como $r$ son estadísticos de dispersión e invarianza ante traslaciones afines constantes, descontando internamente el sesgo medio histórico ($\bar{e} = +0.3404\%\text{Cu}$).  
+> * Por el contrario, el **$\text{MSE}$ ($0.134971\,(\%\text{Cu})^2$)**, el **$\text{RMSE}$ ($0.3674\%\text{Cu}$)** y el **$R^2$ ($-1.2709$)** cuantifican la distancia absoluta y cuadrática respecto a la recta de identidad física $y = \hat{y}$, penalizando íntegramente la sobreestimación sistemática ($\bar{e}^2 = 0.115884\,(\%\text{Cu})^2$, equivalente al $85.86\%$ del error total). Esto demuestra con exactitud matemática por qué `Baseline 1B` ($\text{MSE} = 0.020782\,(\%\text{Cu})^2$, $\text{NRMSE} = 10.07\%$) es el verdadero piso técnico de calibración empírica.
 
 ![Predicciones Fuera de Muestra vs Real](./fig_baselines_predicciones_oos.png)
 
@@ -152,7 +156,7 @@ Uno de los principales hitos de investigación establecidos en el Bloque 1 consi
   * En OLS, el coeficiente estandarizado promedia $\bar{\beta}_{\text{CuS}}^{\text{OLS}} = +0.0366$ (frente a $\bar{\beta}_{\text{CuT}}^{\text{OLS}} = +0.1782$).
   * En Ridge, la regularización $L_2$ retiene de manera consistente $\bar{\beta}_{\text{CuS}}^{\text{Ridge}} = +0.0537$ (frente a $\bar{\beta}_{\text{CuT}}^{\text{Ridge}} = +0.1167$).
 
-Este resultado demuestra categóricamente que **el operador Lasso nunca descartó a $\text{Cancha\_CuS}$**, confirmando su indispensabilidad en el espacio de características.
+Este resultado demuestra que **el operador Lasso nunca descartó a $\text{Cancha\_CuS}$**, confirmando una señal marginal positiva persistente ($\bar{\beta}_{\text{CuS}} = +0.0264$) a lo largo de los $24$ pliegues que justifica evaluar formalmente su interacción no lineal mediante redes neuronales en el Bloque 3.
 
 ![Evolución de Coeficientes de Regularización en LOOCV](./fig_baselines_coeficientes_regularizacion.png)
 
@@ -241,23 +245,23 @@ Todos los entregables han sido generados mediante código auditable y reproducib
 
 Con los resultados auditados del Bloque 2, el marco de evaluación de la tesis queda perfectamente acotado y desmitificado ante la comisión evaluadora:
 
-1. **La Falsa Valla (Línea Base 1A):** Superar el error histórico del acopio ($\text{NRMSE} = 25.67\%$, $\text{RMSE} = 0.3674\%\text{Cu}$) es una condición necesaria pero insuficiente, pues el $85.83\%$ de dicho error es un desplazamiento constante trivial.
-2. **La Valla de Entrada (Modelos Lineales Regularizados):** La RNA debe superar a OLS y RidgeCV ($\text{NRMSE} \approx 11.78\% - 11.85\%$, $\text{RMSE} \approx 0.1685\%\text{Cu}$), demostrando que la interacción no lineal de la solubilidad aporta precisión más allá de un plano rígido.
-3. **El Rival a Vencer (Baseline 1B — Sesgo Constante en LOOCV):** 
-   $$\mathbf{\text{NRMSE}_{\text{Baseline 1B}} = 10.07\% \quad (\text{RMSE} = 0.1442\%\text{Cu}, \ R^2 = 0.6503)}$$
-   Para justificar conceptualmente la superioridad del Deep Learning / Machine Learning, la red neuronal artificial debe perforar la barrera del $10.07\%$.
-4. **La Meta de Excelencia (Benchmark Dr. José Delgado Vega):**
+1. **La Falsa Valla (Línea Base 1A):** Superar el error histórico del acopio ($\text{NRMSE} = 25.67\%$, $\text{RMSE} = 0.3674\%\text{Cu}$) es una condición necesaria pero insuficiente, pues el **$85.86\%$** de dicho error obedece a un desplazamiento constante trivial ($\bar{e}^2 = 0.115884\,(\%\text{Cu})^2$).
+2. **La Valla de Entrada (Modelos Lineales Regularizados):** La RNA debe superar a OLS y RidgeCV ($\text{NRMSE} \approx 11.78\% - 11.85\%$, $\text{RMSE} \approx 0.1685\%\text{Cu}$), evaluando si la curvatura no lineal de la solubilidad aporta ventajas predictivas tangibles frente a un hiperplano rígido.
+3. **El Benchmark Empírico de Referencia en LOOCV (Baseline 1B — Sesgo Constante en LOOCV, Auditoría B2-01):** 
+   $$\mathbf{\text{NRMSE}_{\text{Baseline 1B}} = 10.07\% \quad (\text{MSE} = 0.020782\,(\%\text{Cu})^2, \ \text{RMSE} = 0.1442\%\text{Cu}, \ R^2 = 0.6503)}$$
+   Constituye la cota empírica de mínima varianza lineal en LOOCV global ($N = 24$), estableciendo la referencia base para evaluar el desempeño de aproximadores universales compactos.
+4. **La Meta de Referencia Histórica (Benchmark Dr. José Delgado Vega, Auditoría B2-01):**
    $$\mathbf{\text{NRMSE}_{\text{Delgado}} \approx 8.63\% \quad (\text{RMSE} \approx 0.1235\%\text{Cu}, \ R^2 > 0.74)}$$
-   Alcanzar o aproximarse a esta cota consolidará la hipótesis de que la varianza residual geometalúrgica es reducible mediante una arquitectura neuronal compacta y regularizada.
+   Planteado como referente preliminar a auditar rigurosamente en igualdad de condiciones metodológicas (LOOCV y validación prospectiva *Holdout* 19/5 en los Bloques 3 y 4), contrastando si una arquitectura neuronal parsimoniosa logra capturar señal geometalúrgica estructurada en frentes regulares.
 
-### 8.2. Directrices Metodológicas para el Bloque 3 (`03_red_neuronal_loocv.ipynb`)
+### 8.2. Directrices Metodológicas para el Bloque 3 (`03_modelado_rna_loocv.ipynb`) (Auditoría B2-03)
 
-Para enfrentar con éxito este desafío sin caer en sobreajuste sobre $N = 24$, se establecen las siguientes directrices de diseño para el Bloque 3:
-* **Espacio de Entradas:** Estrictamente $X = [\text{Cancha\_CuT}, \text{Cancha\_CuS}]$, escalado con `StandardScaler` dentro de cada pliegue LOOCV.
-* **Arquitectura Parsimoniosa:** Perceptrón multicapa (MLP) de bajo conteo de parámetros (1 capa oculta con $2$ a $4$ neuronas, o 2 capas micro con $3-2$ neuronas) para garantizar un ratio muestras/parámetros saludable ($N / P \ge 2.5$).
-* **Regularización Obligatoria:** Decaimiento de pesos ($L_2$ weight decay / penalty $\alpha \in [0.01, 1.0]$) y parada temprana (*early stopping* interno) para controlar la capacidad de generalización.
-* **Estudio de Ablación:** Entrenar formalmente la red con 2 entradas $[\text{CuT}, \text{CuS}]$ frente a la red reducida de 1 entrada $[\text{CuT}]$, para certificar matemáticamente el aporte neto de la ley soluble.
-* **Contrato de Salida:** Exportar `PREDICCIONES_OOS_RNA.csv` y `LOG_ENTRENAMIENTO_RNA.csv` con la arquitectura y pesos finales.
+Para abordar la modelación neuronal sin riesgo de sobreajuste sobre $N = 24$, se establecen las directrices de diseño implementadas en el Bloque 3:
+* **Espacio de Entradas:** Estrictamente $X = [\text{Cancha\_CuT}, \text{Cancha\_CuS}]$, escalado con `StandardScaler` encapsulado dentro de cada pliegue LOOCV.
+* **Arquitecturas Parsimoniosas:** Perceptrones multicapa (`Direct-MLP`, `Residual-MLP` y réplica Keras del Dr. Delgado) con ratios de muestras por parámetro $N_{\text{train}} / P \in [1.15, 2.56]$.
+* **Optimización y Regularización:** Optimizador cuasi-Newton `L-BFGS` (óptimo para muestras pequeñas con convergencia exacta de segundo orden), regularización $L_2$ con barrido de decaimiento de pesos $\alpha \in [0.001, 5.0]$ y ensamble multi-semilla (10 semillas de inicialización) para blindar la estabilidad estocástica.
+* **Estudio de Ablación y Esquemas Complementarios:** Evaluación formal de 2 entradas vs. 1 entrada $[\text{CuT}]$, complementada con partición *Holdout* 19/5 y validación geoestadística *Buffered-LOOCV*.
+* **Contrato de Salida:** Exportar `PREDICCIONES_OOS_RNA.csv` y `LOG_HIPERPARAMETROS_RNA.csv` con las arquitecturas y métricas consolidadas.
 
 ---
 
@@ -269,4 +273,4 @@ Para enfrentar con éxito este desafío sin caer en sobreajuste sobre $N = 24$, 
 * **Compromiso 4 (Contrato de Salida y Bitácora de Hiperparámetros):** **CUMPLIDO AL 100%.** Tablas `PREDICCIONES_OOS_BASELINES.csv/.xlsx`, `LOG_HIPERPARAMETROS_BASELINES.csv/.xlsx` y `SENSIBILIDAD_ESCALADO_Y_BUFFERED_BASELINES.csv/.xlsx` generadas y validadas, con confirmación de que LassoCV retuvo $\text{CuS}$ en el 100% de los pliegues.
 
 > **🚀 ESTADO FINAL:** **BLOQUE 2 OFICIALMENTE CERRADO, VALIDADO Y SELLADO (METODOLOGÍA v4.0).**  
-> El proyecto se encuentra plenamente habilitado para iniciar el **BLOQUE 3: Red Neuronal Artificial (RNA), Optimización de Arquitectura y Evaluación LOOCV** (`03_red_neuronal_loocv.ipynb`).
+> El proyecto se encuentra plenamente habilitado para iniciar el **BLOQUE 3: Redes Neuronales Artificiales (RNA), Optimización de Arquitectura y Evaluación LOOCV** (`03_modelado_rna_loocv.ipynb`).
