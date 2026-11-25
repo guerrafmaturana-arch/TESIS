@@ -1,9 +1,10 @@
 # Predicción de la Ley Mineral de Venta Mediante Redes Neuronales Artificiales para Minimizar las Pérdidas Económicas
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/guerrafmaturana-arch/TESIS/blob/main/C%C3%93DIGO_TESIS.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/guerrafmaturana-arch/TESIS/blob/main/C%C3%B3digo/C%C3%B3digo%20unificado.ipynb)
 ![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue.svg)
-![TensorFlow Version](https://img.shields.io/badge/TensorFlow-2.x-orange.svg)
-![Status](https://img.shields.io/badge/Status-En%20Desarrollo-green.svg)
+![Scikit-Learn Version](https://img.shields.io/badge/scikit--learn-1.3%2B-orange.svg)
+![SHAP Version](https://img.shields.io/badge/SHAP-XAI-brightgreen.svg)
+![Status](https://img.shields.io/badge/Status-Metodolog%C3%ADa%20v4.0%20Auditada-green.svg)
 
 **Memoria de Título para optar al Título de Ingeniero Civil en Minas**  
 **Universidad de Antofagasta** — Facultad de Ingeniería, Departamento de Ingeniería en Minas  
@@ -82,33 +83,25 @@ $$R^2 = 1 - \frac{\sum_{i=1}^{n} (y_i - \hat{y}_i)^2}{\sum_{i=1}^{n} (y_i - \bar
 
 ```text
 TESIS/
-├── ANÁLISIS_DEL_PROBLEMA/              # Gráficos y análisis exploratorio del error
-│   ├── grafico_evaluacion_modelo.png   # Comparativa MSE modelo vs histórico
-│   └── Gráfico de calor.png            # Mapa de calor de correlaciones
-├── DATA_COBRIZO/                       # Datos operacionales de faena Mantos Cobrizo
-│   ├── Data Cobrizo.xlsx               # Planilla maestra mensual (2023-2024)
-│   ├── DATASET.csv                     # Dataset oficial (Cancha_CuT, Cancha_CuIn, Canje_CuT)
-│   ├── DATASET2.csv                    # Dataset con tonelaje y todas las leyes de cobre
-│   └── Presentación_cobrizo_050325.pptx# Presentación técnica del Dr. José Delgado
-├── MATERIAL_TESIS/                     # Información regulatoria y antecedentes
-│   ├── Precio mx Enami 2023-2024/      # Tarifas oficiales mensuales publicadas por ENAMI
-│   ├── Data Tigresa.xlsx               # Datos de yacimiento complementario
-│   ├── Presentación_cobrizo_050325.pptx
-│   └── Presentación_tigresa_060325.pptx
-├── REDES_NEURONALES/                   # Literatura científica base (LeCun, Glorot, Goodfellow)
-│   ├── Efficient BackProp (LeCun)
-│   ├── Deep sparse Rectifier neural networks (Glorot)
-│   └── Neural Networks and Deep Learning
-├── TESIS_COMPARTIDAS/                  # Tesis y memorias de referencia académica
-│   ├── Memoria_Pedro_Manriquez.pdf
-│   ├── Tesis Eduardo Carneiro.pdf
-│   └── Charlotte Bazaes Jimenez.docx
-├── Carta_Gantt.xlsx                    # Planificación temporal de actividades y entregas
-├── CÓDIGO_TESIS.ipynb                  # Notebook principal para Google Colab
-├── Código_V1_Colab.ipynb               # Primera iteración del flujo de entrenamiento
-├── PRUEBA1.ipynb                       # Pruebas experimentales y exploración algorítmica
-├── INFORME_TESIS.docx                  # Documento formal de la Memoria de Título
-└── README.md                           # Documentación general del repositorio
+├── Código/                             # ENTREGABLE UNIFICADO Y DOCUMENTACIÓN DE DEFENSA
+│   ├── Código unificado.ipynb          # Cuaderno interactivo Google Colab / Local (18 modelos, LOOCV y Buffered-LOOCV)
+│   ├── traductor.md                    # Explicación pedagógica exhaustiva línea por línea del código
+│   ├── glosario.md                     # Enciclopedia técnica conceptual (minería, econometría, ML, XAI)
+│   └── informe entregable.md           # Informe de defensa oral ejecutiva ante comisión evaluadora
+├── METODOLOGÍA/                        # Marco metodológico maestro v4.0 y contratos de bloques
+│   ├── METODOLOGIA_TRABAJO_TESIS.md    # Metodología de Trabajo Integral de Tesis v4.0
+│   └── Metodología.md                  # Versión ejecutiva consolidada
+├── BLOQUE_0/                           # ETL, Auditoría de Fuentes ENAMI y Limpieza de Datos (N=24)
+├── BLOQUE_1/                           # Análisis Exploratorio (EDA), Normalidad, Mahalanobis y VIF
+├── BLOQUE_2/                           # Baselines Estadísticos (OLS, Ridge, Lasso, ElasticNet, SVR, Baseline 1B)
+├── BLOQUE_3/                           # Modelado de Redes Neuronales Artificiales (MLP / ResNet) en LOOCV
+├── BLOQUE_4/                           # Evaluación Rigurosa, Comparativa 18 Modelos, Ablación y SHAP
+├── BLOQUE_5/                           # Modelo Económico Dual, Valorización Comercial ENAMI y VAN/TIR
+├── BLOQUE_6/                           # Síntesis Global y Redacción Final de la Memoria de Título
+├── DATA_COBRIZO/                       # Datos operacionales históricos de faena Mantos Cobrizo
+├── MATERIAL_TESIS/                     # Circulares tarifarias ENAMI 2023-2024 y literatura de soporte
+├── CÓDIGO_TESIS.ipynb                  # Cuaderno de referencia histórica inicial
+└── README.md                           # Documentación principal del repositorio
 ```
 
 ---
@@ -128,9 +121,9 @@ El archivo [`DATASET.csv`](file:///c:/Users/fguer/Desktop/TESIS/DATA_COBRIZO/DAT
 ## 🚀 6. Instrucciones de Uso y Ejecución
 
 ### Opción 1: En Google Colab (Recomendada)
-1. Abre el notebook directamente haciendo clic en el botón [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/guerrafmaturana-arch/TESIS/blob/main/C%C3%93DIGO_TESIS.ipynb).
-2. Sube el archivo `DATASET.csv` (ubicado en `DATA_COBRIZO/DATASET.csv`) al entorno de ejecución de Colab.
-3. Ejecuta las celdas secuencialmente para realizar la carga, escalado, entrenamiento y evaluación de métricas.
+1. Abre el notebook directamente haciendo clic en el botón [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/guerrafmaturana-arch/TESIS/blob/main/C%C3%B3digo/C%C3%B3digo%20unificado.ipynb).
+2. El cuaderno cuenta con un **cargador universal automático**: buscará el dataset en las rutas locales o abrirá una ventana de diálogo interactiva para subir cualquier archivo `.csv` o `.xlsx` (por ejemplo, `BLOQUE_0/DATASET_AUDITADO_N24.csv` o `DATA_COBRIZO/DATASET.csv`).
+3. Ejecuta las celdas secuencialmente para realizar la carga, el protocolo Leave-One-Out Cross-Validation (LOOCV), el benchmark de 18 modelos, la prueba de autocorrelación Buffered-LOOCV y la interpretabilidad SHAP.
 
 ### Opción 2: En Entorno Local
 1. Clona el repositorio:
@@ -140,9 +133,9 @@ El archivo [`DATASET.csv`](file:///c:/Users/fguer/Desktop/TESIS/DATA_COBRIZO/DAT
    ```
 2. Instala las dependencias requeridas:
    ```bash
-   pip install numpy pandas matplotlib seaborn scikit-learn tensorflow openpyxl
+   pip install numpy pandas matplotlib seaborn scikit-learn shap joblib openpyxl
    ```
-3. Ejecuta el notebook `CÓDIGO_TESIS.ipynb` en Jupyter Lab, VS Code o tu entorno preferido.
+3. Ejecuta el notebook [`Código/Código unificado.ipynb`](file:///c:/Users/fguer/Desktop/TESIS/Código/Código%20unificado.ipynb) en Jupyter Lab, VS Code o tu entorno preferido. Para el estudio conceptual y defensa teórica, consulta [`Código/traductor.md`](file:///c:/Users/fguer/Desktop/TESIS/Código/traductor.md), [`Código/glosario.md`](file:///c:/Users/fguer/Desktop/TESIS/Código/glosario.md) y [`Código/informe entregable.md`](file:///c:/Users/fguer/Desktop/TESIS/Código/informe%20entregable.md).
 
 ---
 

@@ -92,7 +92,7 @@ flowchart TD
    * Verificación de nulos ($0$ faltantes), duplicados ($0$ registros repetidos) y tipos numéricos.
    * Homologación dimensional: conversión de leyes desde fracción decimal a **puntos porcentuales ($\%\text{Cu}$)** con formato uniforme de $2$ decimales.
    * Auditoría del balance de especies ($\text{CuT} = \text{CuS} + \text{CuIn}$): registrar discrepancia por redondeo ($0.01\%\text{Cu}$ en Cancha; $0.20\%\text{Cu}$ en Canje) y certificar que `Canje_CuT` corresponde al ensayo oficial directo.
-   * Incorporación de tonelaje estimado en acopio (`Cancha_Ton` = $286{,}704\text{ t}$) y tonelaje oficial pesado en báscula puente (`Romana_Ton`, calculando su suma dinámicamente desde el dataframe: $295{,}960.67\text{ t}$).
+   * Incorporación de tonelaje estimado en acopio (`Cancha_Ton` = $286{,}704\text{ t}$) y tonelaje oficial pesado en báscula puente (`Romana_Ton`, calculando su suma dinámicamente desde el dataframe: $295{,}884.67\text{ t}$).
 3. **Extracción y Certificación de Tarifas ENAMI Sulfuros (2023–2024):**
    * Parseo de las $24$ circulares oficiales PDF (`Precio_Cu_cUSD_lb`, `Tipo_Cambio_CLP_USD`, `Flot_Base_USD_tms` al $2.5\%\text{Cu}$, `Flot_Escala_USD_tms_1pct`, `Flot_Fondo_Estab`, `Subprod_Cu_Insol`).
    * Documentación de la ecuación comercial neta de sulfuros ENAMI (sin duplicar descuento de maquila) y verificación visual obligatoria del escaneo `ABRIL 2023.pdf` antes de su uso en el Bloque 5.
@@ -135,7 +135,7 @@ flowchart TD
    * **Optimización interna de hiperparámetros:** Búsqueda mediante validación cruzada interna (*Nested CV*, K-Fold $K = 5$ dentro de los $23$ datos de entrenamiento), evitando cualquier ajuste sobre la muestra de prueba.
 2. **Fijación de la Línea Base Operacional (Sin Modelo):**
    * Predictor empírico actual de faena: $\hat{y}_{\text{Cancha}, i} = \text{CuT}_{\text{cancha}, i}$.
-   * Reconciliación algebraica con la cifra de referencia del profesor guía ($\text{MECM} = 26\% \equiv \text{NRMSE} = 25.67\%$ en Canje y $25.98\%$ en PSJ; descomposición $\text{MSE} = \bar{e}^2 + \sigma^2_{\text{error}} = 0.1159 + 0.0191 = 0.1350\,(\%\text{Cu})^2$, donde el $85.83\%$ es sesgo sistemático).
+   * Reconciliación algebraica con la cifra de referencia del profesor guía ($\text{MECM} = 26\% \equiv \text{NRMSE} = 25.67\%$ en Canje y $25.98\%$ en PSJ; descomposición $\text{MSE} = \bar{e}^2 + \sigma^2_{\text{error}} = 0.1159 + 0.0191 = 0.1350\,(\%\text{Cu})^2$, donde el $85.86\%$ es sesgo sistemático).
 3. **Entrenamiento de Modelos de Referencia (*Baselines*):**
    * **Regresión Lineal Múltiple (MCO / OLS):** $\hat{y} = \beta_0 + \beta_1 \text{CuT} + \beta_2 \text{CuS}$.
    * **Regresión Ridge ($L_2$):** Optimización interna de $\alpha \in \{10^{-3}, \dots, 10^2\}$.
@@ -264,7 +264,7 @@ Para alinear el repositorio local (`./BLOQUE_0/` a `./BLOQUE_6/`) con esta **Ver
 
 1. **Ajuste rápido de cierre en `BLOQUE_0` y `BLOQUE_1` (sin rehacer cálculos ya certificados):**
    * En `BLOQUE_0/INFORME_ENTREGABLE_BLOQUE_0.md`:
-     * Corregir la suma de `Romana_Ton` usando el cálculo dinámico exacto ($295{,}960.67\text{ t}$) y eliminar referencias a archivos temporales de auditoría en el índice.
+     * Corregir la suma de `Romana_Ton` usando el cálculo dinámico exacto ($295{,}884.67\text{ t}$) y eliminar referencias a archivos temporales de auditoría en el índice.
      * Dejar constancia de que el bloque documenta la **brecha histórica operacional** como línea base del problema, y que las tablas de dispersión/covarianza alimentan el diagnóstico del Bloque 1, mientras que las **métricas formales de validación predictiva** se ejecutarán de forma unificada en el Bloque 4.
    * En `BLOQUE_1/INFORME_ENTREGABLE_BLOQUE_1.md`:
      * Integrar la matriz de covarianza muestral y el contraste de varianzas ($s^2_{\text{CuT}} / s^2_{\text{CuS}} = 61.6\times$) dentro del resumen de EDA, y eliminar la fila `Constante (VIF = 1.0000)` de la tabla de VIF (manteniendo `sm.add_constant` en el código).

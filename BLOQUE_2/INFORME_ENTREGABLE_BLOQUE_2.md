@@ -66,7 +66,7 @@ donde $Z_j(k) = (X_{k,j} - \mu_{j,-k}) / \sigma_{j,-k}$.
 #### 4. Regresión Ridge ($L_2$ — Tikhonov)
 Controla el condicionamiento numérico y el efecto apalancamiento minimizando la suma de errores cuadráticos más la penalización de norma euclidiana:
 $$\hat{\beta}^{\text{Ridge}} = \arg\min_{\beta} \left\{ \sum_{i \ne k} \left(y_i - \beta_0 - \sum_{j=1}^2 \beta_j Z_{i,j}\right)^2 + \alpha \sum_{j=1}^2 \beta_j^2 \right\}$$
-El hiperparámetro $\alpha \in \text{logspace}(-3, 3, 100)$ se selecciona mediante validación cruzada interna (GCV/LOOCV interno) dentro del pliegue de entrenamiento.
+El hiperparámetro $\alpha \in \text{logspace}(-3, 3, 100)$ se selecciona mediante validación cruzada interna (`RidgeCV(cv=5)`) dentro del pliegue de entrenamiento.
 
 #### 5. Regresión Lasso ($L_1$ — Least Absolute Shrinkage and Selection Operator)
 Aplica contracción de coeficientes con capacidad intrínseca de selección de variables:
@@ -94,12 +94,12 @@ sujeto a $|y_i - f(x_i)| \le \epsilon + \xi_i^{(*)}$. Los hiperparámetros $C \i
 | Modelo de Referencia | MSE ($(\%\text{Cu})^2$) | RMSE ($\%\text{Cu}$) | MAE ($\%\text{Cu}$) | NRMSE ($\%$) | $R^2$ Score | MAPE ($\%$) | Pearson $r$ | Sesgo ($\%\text{Cu}$) | Varianza Residual $s^2_e$ |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | **Línea Base 1A (Cancha Directa)** | 0.134971 | 0.3674 | 0.3404 | 25.67 | -1.2709 | 24.90 | +0.8347 | +0.3404 | 0.019917 |
-| **Baseline 1B (Sesgo Constante LOOCV)** | **0.020782** | **0.1442** | **0.1178** | **10.07** | **+0.6503** | **8.12** | **+0.8209** | **+0.0000** | **0.021676** |
-| **OLS (Regresión Lineal Múltiple)** | 0.028789 | 0.1697 | 0.1318 | 11.85 | +0.5156 | 8.82 | +0.7346 | -0.0008 | 0.030043 |
-| **RidgeCV ($L_2$)** | 0.028403 | 0.1685 | 0.1301 | 11.78 | +0.5221 | 8.93 | +0.7248 | +0.0097 | 0.029639 |
-| **LassoCV ($L_1$)** | 0.030971 | 0.1760 | 0.1373 | 12.30 | +0.4789 | 9.23 | +0.7047 | +0.0062 | 0.032321 |
-| **ElasticNetCV ($L_1 + L_2$)** | 0.031294 | 0.1769 | 0.1369 | 12.36 | +0.4735 | 9.21 | +0.6992 | +0.0080 | 0.032658 |
-| **SVR (Kernel RBF)** | 0.056986 | 0.2387 | 0.1796 | 16.68 | +0.0412 | 12.11 | +0.4546 | +0.0075 | 0.059489 |
+| **Baseline 1B (Sesgo Constante LOOCV)** | **0.020782** | **0.1442** | **0.1178** | **10.07** | **+0.6503** | **8.12** | **+0.8209** | **-0.0000** | **0.021686** |
+| **OLS (Regresión Lineal Múltiple)** | 0.028789 | 0.1697 | 0.1318 | 11.85 | +0.5156 | 8.82 | +0.7346 | +0.0038 | 0.030025 |
+| **RidgeCV ($L_2$)** | 0.028403 | 0.1685 | 0.1301 | 11.78 | +0.5221 | 8.93 | +0.7248 | +0.0108 | 0.029515 |
+| **LassoCV ($L_1$)** | 0.030971 | 0.1760 | 0.1373 | 12.30 | +0.4789 | 9.23 | +0.7047 | +0.0087 | 0.032239 |
+| **ElasticNetCV ($L_1 + L_2$)** | 0.031294 | 0.1769 | 0.1369 | 12.36 | +0.4735 | 9.21 | +0.6992 | +0.0085 | 0.032578 |
+| **SVR (Kernel RBF)** | 0.056986 | 0.2387 | 0.1796 | 16.68 | +0.0412 | 12.11 | +0.4546 | -0.0110 | 0.059338 |
 
 *Nota de rigor: Las métricas corresponden al vector completo de 24 predicciones fuera de muestra generadas de manera ciega (una a una).*
 
@@ -151,20 +151,20 @@ sujeto a $|y_i - f(x_i)| \le \epsilon + \xi_i^{(*)}$. Los hiperparámetros $C \i
 Uno de los principales hitos de investigación establecidos en el Bloque 1 consistió en dilucidar si la variable $\text{Cancha\_CuS}$ aporta valor real o si su correlación es meramente espuria, susceptible de ser anulada por penalización $L_1$.
 
 * **Resultado Cuantitativo:** En **24 de los 24 pliegues de validación cruzada (100.0%)**, el estimador LassoCV asignó un coeficiente estrictamente positivo a la ley de cobre soluble:
-  $$\min_{k} \beta_{\text{CuS}, k}^{\text{Lasso}} = +0.0124, \quad \max_{k} \beta_{\text{CuS}, k}^{\text{Lasso}} = +0.0627, \quad \bar{\beta}_{\text{CuS}}^{\text{Lasso}} = +0.0264$$
+  $$\min_{k} \beta_{\text{CuS}, k}^{\text{Lasso}} = +0.0124, \quad \max_{k} \beta_{\text{CuS}, k}^{\text{Lasso}} = +0.0627, \quad \bar{\beta}_{\text{CuS}}^{\text{Lasso}} = +0.0261$$
 * **Comportamiento en OLS y Ridge:**
-  * En OLS, el coeficiente estandarizado promedia $\bar{\beta}_{\text{CuS}}^{\text{OLS}} = +0.0366$ (frente a $\bar{\beta}_{\text{CuT}}^{\text{OLS}} = +0.1782$).
-  * En Ridge, la regularización $L_2$ retiene de manera consistente $\bar{\beta}_{\text{CuS}}^{\text{Ridge}} = +0.0537$ (frente a $\bar{\beta}_{\text{CuT}}^{\text{Ridge}} = +0.1167$).
+  * En OLS, el coeficiente estandarizado promedia $\bar{\beta}_{\text{CuS}}^{\text{OLS}} = +0.0372$ (frente a $\bar{\beta}_{\text{CuT}}^{\text{OLS}} = +0.1780$).
+  * En Ridge, la regularización $L_2$ retiene de manera consistente $\bar{\beta}_{\text{CuS}}^{\text{Ridge}} = +0.0537$ (frente a $\bar{\beta}_{\text{CuT}}^{\text{Ridge}} = +0.1146$).
 
-Este resultado demuestra que **el operador Lasso nunca descartó a $\text{Cancha\_CuS}$**, confirmando una señal marginal positiva persistente ($\bar{\beta}_{\text{CuS}} = +0.0264$) a lo largo de los $24$ pliegues que justifica evaluar formalmente su interacción no lineal mediante redes neuronales en el Bloque 3.
+Este resultado demuestra que **el operador Lasso nunca descartó a $\text{Cancha\_CuS}$**, confirmando una señal marginal positiva persistente ($\bar{\beta}_{\text{CuS}} = +0.0261$) a lo largo de los $24$ pliegues que justifica evaluar formalmente su interacción no lineal mediante redes neuronales en el Bloque 3.
 
 ![Evolución de Coeficientes de Regularización en LOOCV](./fig_baselines_coeficientes_regularizacion.png)
 
 ### 4.2. Síntesis de Hiperparámetros Seleccionados Pliegue a Pliegue
 
 * **Sesgo de Entrenamiento ($\bar{e}_{\text{train}, -k}$):** Osciló de forma estable entre $0.3287\%\text{Cu}$ y $0.3526\%\text{Cu}$ (media global $0.3404\%\text{Cu}$).
-* **Ridge $\alpha$:** Seleccionado predominantemente en $\alpha \in [5.72, 17.48]$, reflejando una necesidad continua de regularización para estabilizar el hiperplano frente al apalancamiento de Octubre y Noviembre 2023.
-* **Lasso $\alpha$:** Rango óptimo $\alpha \in [0.0001, 0.0351]$, con media $0.0199$.
+* **Ridge $\alpha$:** Seleccionado en $\alpha \in [3.2745, 17.4753]$ (media $11.0682$), reflejando una necesidad continua de regularización para estabilizar el hiperplano frente al apalancamiento de Octubre y Noviembre 2023.
+* **Lasso $\alpha$:** Rango óptimo $\alpha \in [0.0001, 0.0351]$, con media $0.0185$.
 * **ElasticNet $l_1\text{-ratio}$:** Seleccionó alternativamente $0.10$ (comportamiento predominantemente Ridge) y $0.99$ (comportamiento Lasso), logrando un balance equivalente.
 * **SVR ($C, \epsilon, \gamma$):** En los 24 pliegues se seleccionó preferentemente $C \in [1, 50]$, $\epsilon = 0.10$ y $\gamma \in [\text{'scale'}, 0.10]$.
 

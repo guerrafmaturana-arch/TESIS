@@ -10,7 +10,7 @@
 ## ¿Cómo estudiar con este documento?
 
 Este manual traduce **cada bloque y cada línea de Python** de [`Código unificado.ipynb`](./Código%20unificado.ipynb) al lenguaje de la **Ingeniería en Minas, la Geoestadística y la Estadística Aplicada**.  
-El cuaderno ha sido diseñado como una **plataforma universal compatible con Google Colab**: permite subir cualquier archivo `.csv` o `.xlsx` —al igual que en tu cuaderno original `CÓDIGO_TESIS.ipynb` (`DATASET_AUDITADO_N24.csv`, `DATASET2.csv`, `DATASET.csv`, Mina Tigresa o futuras campañas 2025+)— y reejecuta automáticamente los Bloques 0 al 4 sin cambiar una sola línea de los algoritmos internos.
+El cuaderno ha sido diseñado como una **plataforma universal compatible con Google Colab**: permite subir cualquier archivo `.csv` o `.xlsx` en **formato tabular plano** (1 sola fila de encabezados con las columnas de leyes de origen y destino) —al igual que en tu cuaderno original `CÓDIGO_TESIS.ipynb` (`DATASET_AUDITADO_N24.csv/.xlsx`, `DATASET2.csv`, `DATASET.csv`, futuras campañas 2025+ o Mina Tigresa una vez consolidados sus datos reales de Cancha y Canje, ya que el archivo crudo `MATERIAL_TESIS/Data Tigresa.xlsx` solo contiene datos en `PLAN` y encabezados combinados)— y reejecuta automáticamente los Bloques 0 al 4 sin cambiar una sola línea de los algoritmos internos.
 
 > **Nota sobre numeración de celdas:** En `Código unificado.ipynb`, los 10 bloques ejecutables aparecen marcados en el margen izquierdo de Jupyter / Google Colab como **`[1]` a `[10]`** (que corresponden internamente a las celdas `1, 3, 5, 7, 9, 10, 11, 13, 14 y 15` del archivo, alternadas con las celdas explicativas de texto). Cada sección de este traductor indica ambos números para ubicación instantánea.
 
@@ -170,8 +170,8 @@ df['Ratio_Solubilidad'] = (df[COL_X2] / df[COL_X1].replace(0, np.nan)) * 100.0
 * **`df['Sesgo_Canje']`**: Calcula el desvío empírico mensual ($X_1 - y$, promedio $+0.3404\%\text{Cu}$ en Mantos Cobrizo).
 * Si las columnas opcionales (`Cancha_Ton`, `Romana_Ton`, `PSJ_CuT`) existen en el CSV subido, se auditan y grafican; si no existen, se omiten elegantemente sin lanzar `KeyError`.
 
-> **Pregunta típica del profesor en esta sección:** *"¿Qué pasa si mañana me traes los datos de 2025 o de Mina Tigresa en un `.csv` con punto y coma y en decimales `0,018`?"*  
-> **Respuesta:** El bloque `cargar_dataset_universal` detecta el separador `;`, convierte la coma decimal a punto, detecta la escala fraccionaria y la homologa a `%Cu`, ajusta dinámicamente el tamaño $N$, los rezagos ACF ($N/4$) y la partición Holdout ($80/20$), y reentrena los 18 modelos automáticamente.
+> **Pregunta típica del profesor en esta sección:** *"¿Qué pasa si mañana me traes los datos de 2025 o los balances reales de Mina Tigresa en un `.csv` o `.xlsx` tabular con punto y coma y decimales `0,018`?"*  
+> **Respuesta:** Siempre que el archivo venga en **formato tabular plano** (1 fila de encabezados con leyes de origen y destino, distinto de planillas crudas con encabezados combinados o `Data Tigresa.xlsx`, que actualmente solo contiene datos de `PLAN`), el bloque `cargar_dataset_universal` detecta el separador `;`, convierte la coma decimal a punto, detecta la escala fraccionaria y la homologa a `%Cu`, ajusta dinámicamente el tamaño $N$, los rezagos ACF ($N/4$) y la partición Holdout ($80/20$), y reentrena los 18 modelos automáticamente.
 
 ---
 
@@ -266,7 +266,7 @@ def construir_red_delgado_keras():
 SEMILLAS = [42, 101, 2023, 7, 13, 99, 123, 456, 789, 999]
 ```
 * Entrena 6 redes directas (`Direct-MLP`) y 4 redes residuales (`Residual-MLP`) promediando **10 semillas fijas** con el optimizador cuasi-Newton **`solver='lbfgs'`** (óptimo para muestras acotadas).
-* **`X_tr = np.asfortranarray(np.delete(X_base, excluidos, axis=0))`**: Retira el registro de prueba `k` preservando el orden de memoria por columnas para garantizar determinismo bit a bit entre Windows y Colab.
+* **`usar_fortran = (indices_excluidos_fn is None)`** y **`X_tr = np.asfortranarray(X_tr_raw) if usar_fortran else np.ascontiguousarray(X_tr_raw)`**: Retira el registro de prueba `k` preservando alineamiento por columnas en LOOCV estándar (determinismo bit a bit en BLAS entre Windows y Colab) y alineamiento contiguo en C en *Buffered-LOOCV* para reproducir exactamente el **`14.53%`** de `RNA_MLP_2` y **`10.04%`** de `Res_MLP_2_2` certificados en el Bloque 3.
 * **`objetivo_tr = (cancha_tr - y_tr) if es_residual else y_tr`** y **`pred_final = (cancha_te - salida) if es_residual else salida`**: Implementa la **conexión física residual (*Skip-Connection*)**, donde la red predice el descuento $e_i$ y lo resta a la ley base de cancha. Bajo $\alpha = 2.0$, los pesos residuales se contraen a cero ($P_{\text{eff}} \approx 1$), asegurando convergencia estable hacia `Baseline_1B`.
 
 ---
